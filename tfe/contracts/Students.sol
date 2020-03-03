@@ -39,5 +39,16 @@ contract Students is Context {
     
     // Para poder acceder rapidamente a la informacion de un estudiante
     mapping(address => Student) _students;
+
+    /*
+    * Para obtener la informacion del nombre de un alumno a partir de su direccion
+    */
+    function getStudentName(address account) public view onlyRegistredUser returns (string memory){
+        return _students[account].name;
+    }
+
+    //TODO: Recargar deposito. Cuando se recarga deposito mejor guardar en una variable dado una cuenta de cliente -> cuentas universidad -> cantidad
+    //TODO: Get lista depositos
+    //TODO: Matricular en una asignatura. Guardar un mapping cuenta usuario -> cuenta token asignatura de las asignaturas en las que estoy matriculado.
     
 }

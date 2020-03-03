@@ -8,7 +8,7 @@ import "./Expirable.sol";
 contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     
     event SubjectMinted(address _to);
-    event  CreateNewSubject(string name, string symbol, string descriptionURI);
+    event CreateNewSubject(string name, string symbol, string descriptionURI);
     event SubjectApproved(uint256 _id);
     event ActivityAdded(uint256 _id, string name);
     
@@ -21,9 +21,6 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     
     // Precio del SubjectToken
     uint256 private _price;
-    
-    // URI a la descripción general del token
-    string private _descriptionURI;
     
     // Control de si una matrícula está aprobada o no
     mapping (uint256 => bool) private _subjectApproved;
@@ -40,7 +37,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
         require(price > 0, "SubjectToken: price is 0");
         
         _price = price;
-        _descriptionURI = descriptionURI;
+        _setBaseURI(descriptionURI);
         emit CreateNewSubject(name, symbol, descriptionURI);
     }
     
@@ -60,7 +57,6 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
         require(balanceOf(to)<1, "SubjectToken: this student is already enrolled");
         increase();
         _safeMint(to,lastTokenIndex+1);
-        setTokenURI(lastTokenIndex+1, _descriptionURI); //Todos los de una misma asignatura tendrán la misma descripción
         lastTokenIndex = lastTokenIndex + 1;
         emit SubjectMinted(to);
         return lastTokenIndex - 1;

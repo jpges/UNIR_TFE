@@ -1,0 +1,114 @@
+Yo entiendo que el ECTS lo voy a implementar como un ERC20. El alumno comprará con ethers el ECTS y por tanto adquiera tokens de este tipo.
+
+Posteriormente por matricularse en una asignatura consume estos ECTS.
+
+Lo que no consigo entender bien es como hacer que las asignaturas se comporten como un ERC721 y como las asigno al usuario.
+
+Te dejo en mi carpeta personal un pequeño código que he hecho para intentar representar esto, a ver si crees que va bien encaminado o directamente es que lo estoy pensando mal. He revisado bien tu ejemplo de la subasta, pero tampoco consigo establecer la relación con una asignatura.
+
+1) creamos una coleccion de 721 llamada "QUIMICA-98765", de esta forma sabemos que es la asignatura de quimica con un cierto temario. El owner de la asignatura sería la universidad, o conjunto de universdiades, que han aprobado que esa asignatura tenga ese temario. Cuando un alumno se examina y aprueba, es la universidad (o un profesor en nombre de la universidad, pero estariamos añadiendo complejidad que dependería de mecanismos de identidad digital) quien mintea un nuevo token 721 dentro de esa colección, asignadoselo a un usuario, con una cierta nota etc, previo pago de los creditos ECTS (aqui habria que pensar el orden en función del proceso de compra/matriculación) pero en esencia, estos serian los pasos
+
+Mi cabeza se estaba centrando en algo parecido al escenario 1.
+
+- Pero yo pensaba mintar el nuevo token en el momento de pagar la matrícula y luego registrar las notas de primera convocatoria o segunda a partir de él, en lugar de mintarlo una vez aprobada la asignatura como me planteas.
+
+- Lo de que sea el profesor y no el owner de la asignatura el que apruebe también le he dado un poco de vueltas y como dices añade bastante complejidad.
+
+Lo que me rompe el esquema y no consigo encajar bien es para que utilizar un ERC721 que presenta ciertas peculiaridades básicas y que en este caso no sé si cumple, por ejemplo:
+
+- Cada token es único. A mi me da la impresión de que todos los tokens de QUIMICA-98765 serían idénticos, solo variaría su identificador.
+
+- El token es transferible. Debemos impedirlo, no se puede transferir una matrícula de un alumno a otro y menos si está aprobada.
+
+- En general las funciones de ownership son las que me rompen todos los esquemas.
+
+Estas contradicciones son las que me están rompiendo la cabeza, pero aún así te agradezco muchísimo la respuesta porque el hecho de ver que en el escenario 1 estamos tan alineados me lleva a pensar que no ando tan desencaminado. Gracias.
+
+Voy a seguir por el escenario 1 y a ver si soy capaz de dibujar algo.
+
+Con respecto a lo de que cada token solo difiere en el identificador, piensa que serían nominales, lo qu econvierte en cad token un elemento único, ya que un alumno en un momento del tiempo solo puede estar matriculado una unica vez en la asignatura.
+
+La parte de ser transferible, piensa que lo que no queremos es que sea transferible entre alumnos, es decir, podemos transferirlo entre roles, no entre usuarios. De esta forma, la universidad lo transfiere al alumno tras elpago de la maricula, el alumno lo puede transferir a la universidad para recibir el titulo, podria transferir de una universidad a otra para un traslado de expediente... y cada una de esas acciones llevaba asociado un modelo de negocio, ya que las universidades quieren que los alumnos se matriculen en sus asignaturas, porque les permite recaudar más fondos.
+
+Entiendo tu planteamiento de unicidad y me quedo con él.
+
+Respecto a la transferencia, también me gusta tu planteamiento, no lo estaba viendo así, pero me plantea alguna duda con lo que yo tenía en mente. Yo pensaba en la asignatura aprobada como varios tokens en propiedad del alumno y presentando estos tokens a una universidad concreta, obtenía un claim de la universidad que se correspondía con un título académico. De esta forma haciendo agrupaciones de asignaturas aprobadas (tokens 721) el alumno obtenía titulaciones (claims 735) sobre su identidad (725).
+
+Con tu planteamiento, si dos carreras tienen 4 asignaturas comunes, tendría que volver a cursarlas para volver a obtener los tokens... a no se que dado un claim de título universitario, pudiéramos pedirle a la universidad que nos emitiera los tokens 721 que nos convalidan.
+
+¿Como lo ves?
+
+Perdona Jose, se me paso contestarte el otro día.
+
+EFectivamente, presentando el claim 725 de una asignatura en otro lugar, te deberían validar la asignatura como aprobada, por que ya se curso y se aprobo. PUede que tengas que pagar un recargo por incluirla (como cuando pagas por las convalidaciones que pagas solo una parte de la matricula) pero es un flujo distinto.
+
+
+------------------------------------------------------------
+
+Sigo con mi guerra de intentar encajar una asignatura dentro de un ERC721, pero hay muchos aspectos que no veo claro. Obviamente la transferencia de una asignatura de un alumno a otro sería una estupidez. La aprobación tampoco sé muy bien donde ponerla. En fin, muchas cosas que siguen haciéndome dudar si puedo representar una asignatura como un ERC721.
+
+Buscando ejemplos con los que pueda establecer paralelismos, he encontrado un ejemplo que construye licencias de software como ERC721.
+
+El usuario adquiere una licencia y se puede verificar que la tiene adquirida.
+
+Ele ejmplo está aquí: https://atchai.com/blog/2018-04-11-software-licence-token-ethereum-erc721-fungible/
+
+En el caso de las matrículas en una asignatura, veo algo parecido, podríamos pensar en una asignatura como un ERC721 con cada token emitido de esa asignatura como una matrícula con un identificador, propietario, etc.
+
+El alumno adquiriría la matrícula de la asignatura, por la cual pagaría en ECTS.
+
+Lo que no sé es como debería impedir que la matrícula fuera transferida a otro alumno.
+
+¿Te encaja este paralelismo entre el caso de las licencias de software y las matrículas en una asignatura?
+
+¿Como podría restringir por ejemplo las transferencias que sí facilita el estándar ERC721?
+
+
+Te planteo que pienses la posibilidad de crear tu un token 721 partiendo solo de la interfaz, de esta forma, sigues tieniendo un 721 (Acuerdate de lo que djimos en clase, el principal motivo de tener un estandar es permitir que el resto de aplicaciones interactuen facilmente con la nuestra, pero la implementacion concreta puede variarse si se mantiene la interfaz) con esto, podrías hacer tokens que una vez enviados a un alumno, ya no se puedan reenviar. Tambien puedes pensar en añadir un identificador al token, de tal forma, que aunque un alumno lo envie, no puede ser usado por otro ya que esta asoicado al primero y cuando se compruebe que los tokens pertenecen a quien los envia, habría un fallo.
+
+
+Implementar la interfaz IERC720 en lugar de extender ERC720 y cargarme o implementar los métodos que gestionan el ownership de forma que impidan las transferencias.
+
+Aunque ciertamente, estoy viendo que si me fijo en la interfaz
+
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/IERC721.sol
+
+únicamente debería implementar como acciones correctas los métodos 
+
+ - balanceOf(address owner)
+
+ - ownerOf(uint256 tokenId)
+
+El resto de métodos deberían ser implementados para no hacer nada y los tres eventos que tiene la interfaz nunca se lanzarán. ¿Estás de acuerdo?
+
+Fijate en la interfaz original de la eip (https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md).
+
+Te dejo un ejemplo de como podría ser un transferFrom con las consideraciones:
+
+mapping(address => bool) isCollege;
+
+modifier onlyToCollege(address _to) {
+    require(isCollege[_to]);
+    _;
+}
+
+function transferFrom(address _from, address _to, uint256 _tokenId) external payable onlyToCollege(_to) {
+
+require(ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
+require(to != address(0), "ERC721: transfer to the zero address");
+
+_clearApproval(tokenId);
+
+_ownedTokensCount[from].decrement();
+_ownedTokensCount[to].increment();
+
+_tokenOwner[tokenId] = to;
+
+emit Transfer(from, to, tokenId);
+}
+
+ 
+
+fiajete que solo hemos añadido modificadores, que sería lo ideal, de esta forma la implementación "core" queda igual, solo modificamos el comportamiento (normalmente roles y permisos)
+
+ 

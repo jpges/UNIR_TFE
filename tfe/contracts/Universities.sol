@@ -102,7 +102,7 @@ contract Universities is Context{
     }
 
     /*
-    * Para obtener la informacion del nombre de una empresa a partir de su direccion
+    * Para obtener la informacion del nombre de una universidad a partir de su direccion
     */
     function getUniversityName(address account) public view onlyRegistredUser returns (string memory){
         return _universities[account].name;
@@ -120,6 +120,8 @@ contract Universities is Context{
     * @return address La cuenta del nuevo token desplegado
     */
     function createSubject(string memory subjectname, string memory symbol, uint256 limitmint, uint256 expirationtime, uint256 price, string memory descriptionURI) public onlyRegistredUniversity returns (address) {
+        //Probablemente esto habrá que hacerlo desde el javascript con la cuenta de la universidad porque sino no sé quien será el propietario. Hay que asegurar que el propietario del token
+        //es la universidad que lo crea y no este SM. A lo mejor se puede hacer aquí lo del from
         SubjectToken _subjectToken = new SubjectToken(subjectname, symbol, limitmint, expirationtime, price, descriptionURI);
         _subjectsUniversity[_msgSender()].push(address(_subjectToken));
         return (address(_subjectToken));
@@ -151,4 +153,9 @@ contract Universities is Context{
         _token.transferFrom(msg.sender, univ, amountTokens);
         emit DepositRegistred(msg.sender, univ, amountTokens);
     }
+
+    //TODO: Matricular en una asignatura
+    //viene de la cuenta del estudiante
+    //verifica si el estudiante tiene suficiente deposito
+    //En caso de que sí. Minta y transfiere el token de la asignatura a ese estudiante
 }
