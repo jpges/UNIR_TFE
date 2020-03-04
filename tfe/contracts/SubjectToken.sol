@@ -8,7 +8,7 @@ import "./Expirable.sol";
 contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     
     event SubjectMinted(address _to);
-    event CreateNewSubject(string name, string symbol, string descriptionURI);
+    event CreateNewSubject(address scAddress, string name, string symbol, string descriptionURI);
     event SubjectApproved(uint256 _id);
     event ActivityAdded(uint256 _id, string name);
     
@@ -38,7 +38,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
         
         _price = price;
         _setBaseURI(descriptionURI);
-        emit CreateNewSubject(name, symbol, descriptionURI);
+        emit CreateNewSubject(address(this), name, symbol, descriptionURI);
     }
     
     /**

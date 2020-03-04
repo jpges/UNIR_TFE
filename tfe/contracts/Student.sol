@@ -9,16 +9,13 @@ import "./openzeppelin/GSN/Context.sol";
  * @dev El SM Students se encarga de la gestión de los estudiantes.
  * El estudiante comprará ECTSToken que luego intercambiará por matriculas en asignaturas mediante un deposito en la universidad
  */
-contract Students is Context {
+contract Student is Context {
     
-    /*
-    * @dev Struct que almacena la información de un estudiante
-    */
-    struct Student {
-      address account;
-      string name;
-      bool isValue;
-    }
+    //Campos de información privados
+    address private _accountOwner; //Cuenta de estudiante propietaria de la instancia
+    string private _name; //Nombre del estudiante
+
+
     
     // Objectos privados que apuntan a los SC relacionados
     ECTSToken private _token;
@@ -39,12 +36,19 @@ contract Students is Context {
     
     // Para poder acceder rapidamente a la informacion de un estudiante
     mapping(address => Student) _students;
+    
+    /**
+     * @dev Devuelve el nombre del estudiante
+     */
+    function name() public view returns (string memory) {
+        return _name;
+    }
 
-    /*
-    * Para obtener la informacion del nombre de un alumno a partir de su direccion
-    */
-    function getStudentName(address account) public view onlyRegistredUser returns (string memory){
-        return _students[account].name;
+    /**
+     * @dev Devuelve la cuenta propietaria de la instancia del smart contract
+     */
+    function accountOwner() public view returns (address) {
+        return _accountOwner;
     }
 
     //TODO: Recargar deposito. Cuando se recarga deposito mejor guardar en una variable dado una cuenta de cliente -> cuentas universidad -> cantidad

@@ -1,8 +1,8 @@
 pragma solidity 0.6.0;
 
 import "./ECTSToken.sol";
-import "./Universities.sol";
-import "./Students.sol";
+import "./University.sol";
+import "./Student.sol";
 import "./openzeppelin/ownership/Ownable.sol";
 
 /**
@@ -10,37 +10,51 @@ import "./openzeppelin/ownership/Ownable.sol";
  * Se encarga de desplegar cosas necesarias como el token que representa a los ECTS y los Smartcontracts
  * que dan acceso y funcionalidad a universidades y alumnos.
  *
- * Sólo hereda del smartcontract Ownable porque en algunos casos exigiremos que algunos métodos únicamente
- * pueda lanzarlos el que desplegó la plataforma.
  */
-contract UniversityPlatform is Ownable {
+contract UniversityPlatform is Ownable{
     using SafeMath for uint256;
     
     //Events
     event BuyTokens(uint256 amount, uint256 priceOfOneTokenInWei, address msgsender);
     event NewPrice(uint256 tokenpricewei);
+    event UniversityRegistred(address account);
+    event StudentRegistred(address account);
     
     // Smartcontracts relacionados
     ECTSToken private _token;
-    Universities private _universities;
-    Students private _students;
     
     //Precio de un token en wei
-    uint256 public priceOfOneTokenInWei;
+    uint256 private _priceOfOneTokenInWei;
   
     //Total tokens vendidos en wei
-    uint256 public weiRaised;
+    uint256 private _weiRaised;
+    
+    // Guardamos la información de las universidades como un mapping de cuentas contra las instancias del Smartcontracts universidad
+    mapping(address => address) private _universities;
+    // Listado rápido de todas los address de las universidades
+    address[] private _listUniversities;
 
     /**
-     * @dev Inicializa el contrato desplegando el token ECTSToken y los componentes universidades y estudiantes.
+     * @dev Inicializa el contrato desplegando el token ECTSToken.
      * También establece el precio inicial que queremos poner a los ECTS, pero posteriormente se puede cambiar manualmente.
      */
     constructor() public {
         _token = new ECTSToken();
-        _universities = new Universities(address(this), address(_token));
-        _students = new Students(address(this), address(_token));
-    
         setTokenPrice((76/100) * 10**18); //Inicialmente establezco el valor en 0,76 ETHER que son unos 150€
+    }
+    
+    /**
+     * @dev La función se utiliza para registrar nuevas universidades en la plataforma.
+     * Emite un evento {UniversityRegistred} con `account` de la nueva universidad registrada.
+     * @param account Cuenta de la universidad que queremos registrar en la plataforma
+     * @param name Nombre de la universidad
+     */
+    function registerUniversity(address account, string memory name) public{
+        // Se despliega un nuevo sc University y se almacena en las variables de registro
+        University univ = new University(account, name, address(_token));
+        _universities[account] = address(univ);
+        _listUniversities.push(account);
+        emit UniversityRegistred(account);
     }
     
     /**
@@ -50,13 +64,22 @@ contract UniversityPlatform is Ownable {
         buyTokens(msg.sender);
     }
     
-    /**
-     * @dev Indica si la cuenta recibida por parámetro es de algún estudiante, universidad o el propio gestor de la plataforma
-     * @param account es la cuenta que se quiere comprobar
-     * @return bool Indica si es o no una cuenta registrada
-     */
-    function isRegistredUser(address account) public view returns (bool){
-        return (_universities.isRegistredUniversity(account) || (account == owner())) ;
+    /*
+    * @dev Modifier que se utiliza para comprobar que el _msgSender() es una cuenta registrada, universidad o alumno, en la
+    * plataforma o la propia cuenta gestora.
+    */
+    modifier onlyRegistredUser(){
+        //TODO: Falta el caso del estudiante
+        if((_universities[msg.sender] != address(0x0)) || (msg.sender == owner())){
+            _;
+        }
+    }
+    
+    /*
+    * @dev Para obtener una lista con todas las direcciones de empresas en la que iterar
+    */
+    function getUniversities() public view onlyRegistredUser returns (address[] memory) {
+        return _listUniversities;
     }
   
     /**
@@ -71,12 +94,12 @@ contract UniversityPlatform is Ownable {
         require(msg.value != 0);
         //TODO: Requerir que el que compra esté registrado como estudiante en la plataforma.
 
-        uint256 amounttokens = msg.value.div(priceOfOneTokenInWei);
-        weiRaised = weiRaised.add(msg.value);
+        uint256 amounttokens = msg.value.div(_priceOfOneTokenInWei);
+        _weiRaised = _weiRaised.add(msg.value);
     
         _token.mint(owner(), amounttokens); //Generamos los tokens a medida que los vamos necesitando
         _token.transfer(beneficiary, amounttokens);
-        emit BuyTokens(amounttokens, priceOfOneTokenInWei, beneficiary);
+        emit BuyTokens(amounttokens, _priceOfOneTokenInWei, beneficiary);
     }
   
     /**
@@ -85,7 +108,7 @@ contract UniversityPlatform is Ownable {
      * @param tokenpricewei Precio del token en wei
      */
     function setTokenPrice(uint256 tokenpricewei) public onlyOwner{
-        priceOfOneTokenInWei = tokenpricewei;
+        _priceOfOneTokenInWei = tokenpricewei;
         emit NewPrice(tokenpricewei);
     }
 
