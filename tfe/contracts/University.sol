@@ -109,17 +109,16 @@ contract University{
     }
     
     /*
-    * @dev Se depositan tokens ECTSToken en un deposito particular del alumno en la universidad que se indica
-    * Se restringe el uso únicamente a usuarios registrados en la plataforma.
+    * @dev Se depositan tokens ECTSToken en un deposito particular del alumno en esta universidad
     * Se emite un evento {DepositRegistred}
     * @param amountTokens Cantidad de tokens que se quieren depositar
     */
-    function deposit(uint amountTokens) public{
+    function makeAnIncome(uint amountTokens) public{
         // Añade los tokens indicados en el depósito del alumno
         _universityStudentBalances[msg.sender] += amountTokens;
 
-        // Transfiere los tokens propiedad del alumno de su cuenta a la de la universidad en la que quiere matricularse.
-        // Antes de llamar a este método el alumno deberá haber aprobado la cuenta de la universidad
+        // Transfiere los tokens propiedad del alumno de su cuenta a la de esta universidad.
+        // Antes de llamar a este método el alumno deberá haber aprobado la cuenta de esta universidad para la cantidad de tokens que quiere transferir
         _token.transferFrom(msg.sender, address(this), amountTokens);
         emit DepositRegistred(msg.sender, address(this), amountTokens);
     }

@@ -1,4 +1,4 @@
-pragma solidity 0.6.0;
+pragma solidity ^0.6.0;
 
 import "./ECTSToken.sol";
 import "./University.sol";
@@ -29,10 +29,15 @@ contract UniversityPlatform is Ownable{
     //Total tokens vendidos en wei
     uint256 private _weiRaised;
     
-    // Guardamos la información de las universidades como un mapping de cuentas contra las instancias del Smartcontracts universidad
+    // Guardamos la información de las universidades como un mapping de cuentas contra las instancias del Smartcontracts university
     mapping(address => address) private _universities;
     // Listado rápido de todas los address de las universidades
     address[] private _listUniversities;
+    
+    // Guardamos la información de los almunos como un mapping de cuentas contra las instancias del Smartcontracts student
+    mapping(address => address) private _students;
+    // Listado rápido de todas los address de los estudiantes registrados
+    address[] private _listStudents;
 
     /**
      * @dev Inicializa el contrato desplegando el token ECTSToken.
@@ -58,6 +63,20 @@ contract UniversityPlatform is Ownable{
     }
     
     /**
+     * @dev La función se utiliza para registrar nuevos estudiantes en la plataforma.
+     * Emite un evento {StudentRegistred} con el `account` del nuevo estudiante registrado.
+     * @param account Cuenta del estudiante que queremos registrar en la plataforma
+     * @param name Nombre del estudiante
+     */
+    function registerStudent(address account, string memory name) public{
+        // Se despliega un nuevo sc Student y se almacena en las variables de registro
+        Student stud = new Student(account, name, address(_token));
+        _students[account] = address(stud);
+        _listStudents.push(account);
+        emit StudentRegistred(account);
+    }
+    
+    /**
      * @dev Cuando se llama al contract sin método y con ether se ejecutará este método.
      */
     receive() external payable {
@@ -69,8 +88,7 @@ contract UniversityPlatform is Ownable{
     * plataforma o la propia cuenta gestora.
     */
     modifier onlyRegistredUser(){
-        //TODO: Falta el caso del estudiante
-        if((_universities[msg.sender] != address(0x0)) || (msg.sender == owner())){
+        if((_universities[msg.sender] != address(0x0)) || (_students[msg.sender] != address(0x0)) || (msg.sender == owner())){
             _;
         }
     }
@@ -80,6 +98,13 @@ contract UniversityPlatform is Ownable{
     */
     function getUniversities() public view onlyRegistredUser returns (address[] memory) {
         return _listUniversities;
+    }
+    
+    /*
+    * @dev Para obtener una lista con todas las direcciones de estudiantes registrados
+    */
+    function getStudents() public view onlyRegistredUser returns (address[] memory) {
+        return _listStudents;
     }
   
     /**
