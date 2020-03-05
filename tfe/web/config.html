@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>ESUMP - Login Estudiantes</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+
+    <!-- Custom styles for this template -->
+    <link href="tfe.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="my-2 card">
+            <div class="card-header">
+                <h2>Contenido JS</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <strong>¡IMPORTANTE!</strong> Para concluir la instalación, debe sustituir totalmente el contenido
+                    del fichero "<strong>config.js</strong>" que encontrará en la raiz de
+                    la web, por el código que se muestra a continuación.
+                </div>
+                <div id="code"></div>
+            </div>
+        </div>
+    </div> 
+    <script type='text/javascript'>
+        let codeinstall = `<pre><code>var environment = '${localStorage.getItem('environment')}';\nvar accountSCPlataforma = '${localStorage.getItem('accountSCPlataforma')}';\nvar accountSCECTSToken = '${localStorage.getItem('accountSCECTSToken')}';</code></pre>`;
+        $('#code').html(codeinstall);
+    </script>
+</body>
+
+</html>

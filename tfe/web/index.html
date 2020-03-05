@@ -11,25 +11,13 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
 
-  <style>
-    .bd-placeholder-img {
-      font-size: 1.125rem;
-      text-anchor: middle;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
-    @media (min-width: 768px) {
-      .bd-placeholder-img-lg {
-        font-size: 3.5rem;
-      }
-    }
-  </style>
   <!-- Custom styles for this template -->
   <link href="tfe.css" rel="stylesheet">
+  <script src="config.js"></script>
 </head>
 
 <body class="text-center">
@@ -37,15 +25,34 @@
     <h2>ECTS & Subjects<BR>University Management Platform</h2>
     <h3>TFE - UNIR</h3>
     <p class="py-3">
-      Esta es la página de acceso principal a la plataforma universitaria de gestión de matriculas y ECTS. Desde aquí debe logarse de acuerdo con su perfil.
+      Esta es la página de acceso principal a la plataforma universitaria de gestión de matriculas y ECTS. Desde aquí
+      debe logarse de acuerdo con su perfil.
     </p>
     <div class="btn-group" class="py-3">
-      <button class="btn btn-lg btn-primary" type="button" onclick="install();">Install</button>
-      <button class="btn btn-lg btn-primary" type="button" onclick="window.location = 'loginuniversidad.html';">Universidades</button>
-      <button class="btn btn-lg btn-primary" type="button" onclick="window.location = 'loginestudiante.html';">Estudiantes</button>
+      <button class="btn btn-lg btn-primary" id="install" type="button">Install</button>
+      <button class="btn btn-lg btn-primary" id="universidades" type="button">Universidades</button>
+      <button class="btn btn-lg btn-primary" id="estudiantes" type="button">Estudiantes</button>
     </div>
     <p class="mt-5 mb-3 text-muted">TFE - JPGES &copy; 2020</p>
   </div>
+  <script type='text/javascript'>
+    $(function () {
+      if (environment === null || environment === undefined || environment === '') {
+        // No está configurado todavía
+        $("#install").attr("disabled", false);
+        $("#universidades").attr("disabled", true);
+        $("#estudiantes").attr("disabled", true);
+      } else {
+        // Ya está configurado
+        $("#install").attr("disabled", true);
+        $("#universidades").attr("disabled", false);
+        $("#estudiantes").attr("disabled", false);
+      };
+    });
+    $('#install').click(function () { window.location = 'installplatform.html'; });
+    $('#universidades').click(function () { window.location = 'loginuniversidad.html'; });
+    $('#estudiantes').click(function () { window.location = 'loginestudiante.html'; });
+  </script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-// Acciones del empleado -----------------------------------------------------
+
 function loginEstudiante(){
     location.replace("estudiantes.html");
     var address = document.getElementById("inputAccount").value;
@@ -16,8 +16,6 @@ function loginEstudiante(){
   		alert("¡Contraseña incorrecta!");
   	}
   }
-
-
 
 function encadenar(){
     var consola = document.getElementById('consola').innerHTML;
