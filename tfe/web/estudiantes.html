@@ -30,42 +30,106 @@
     </style>
     <!-- Custom styles for this template -->
     <link href="tfe.css" rel="stylesheet">
+    <script src="/js/logic.js"></script>
 </head>
 
-<body>
+<body style="padding-top: 10px;">
     <div class="container">
         <div class="my-2 card" style="width: 30rem;">
             <div class="card-body">
-                <h5 class="card-title">José Pastor</h5>
+                <h5 class="card-title float-left">José Pastor</h5> <button type="submit"
+                    class="btn btn-danger float-right">
+                    <span class="glyphicon glyphicon-log-out"></span> Cerrar Sesión
+                </button>
             </div>
         </div>
 
         <div class="my-2 card">
+            <div class="card-header">Lista de matrículas</div>
             <div class="card-body">
-                <h5 class="card-title">Lista de matrículas</h5>
-                <p class="card-text">Tabla de matrículas</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Firstname</th>
+                            <th>Lastname</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td>mary@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td>july@example.com</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div class="my-2 card">
+            <div class="card-header">Lista de depósitos<a class="btn btn-primary text-light float-right" onclick="encadenar();">Transferir nuevo depósito</a></div>
             <div class="card-body">
-                <h5 class="card-title">Depósitos</h5>
-                <p class="card-text">Tabla de depósitos - <a href="#" class="btn btn-primary">Matrícular en
-                        universidad</a></p>
-                <a href="#" class="btn btn-primary">Transferir nuevo depósito</a>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Firstname</th>
+                            <th>Lastname</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td><a href="#" class="btn btn-primary">Matrícular en
+                                    universidad</a></td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td><a href="#" class="btn btn-primary">Matrícular en
+                                    universidad</a></td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td><a href="#" class="btn btn-primary">Matrícular en
+                                    universidad</a></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+            <div class="card-footer "></div>
         </div>
-        <div class="my-2 card">
-            <div class="card-body">
-                <h5 class="card-title">Consola</h5>
-                <div class="overflow-auto">sadasdasdasdasda kjasdlkas jdaljd lakdj
-                    s´ñ asldñasld ´ñasl
-                    sañdlks añdlkñas da
-                    asd kasdñka sdasdkask daskd
-                    asñld kasñlkdalkdj alskdj lask jdlkasjdlkasdlka sjdlkj
-                </div>
+        <div class="card">
+            <div class="card-header">Consola</div>
+            <div class="card-body card-text">
+                <textarea class="form-control" id="consola" rows="5">
+                sadasdasdasdasda kjasdlkas jdaljd lakdj
+                s´ñ asldñasld ´ñasl
+                sañdlks añdlkñas da
+                asd kasdñka
+                sdasdkask daskd
+                asldñasldasd
+                asdsadsadsad
+                asdsadsadsada
+                asdasdasdasdasd
+                asdasdasdasdasd
+                asdasdsadsadasdsadasdasd
+                asdasdsadsadasdsadasdasdasd
+                asñld kasñlkdalkdj alskdj lask jdlkasjdlkasdlka sjdlkjsa sadas dasdsadasdasd asd adad ad as dasdasds
+            </textarea>
             </div>
-
         </div>
     </div>
 </body>
