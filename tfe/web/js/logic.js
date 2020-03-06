@@ -1,6 +1,6 @@
 
 // Registrar una nueva universidad
-function registrarUniversidad() {
+async function registrarUniversidad() {
 	var name = document.getElementById("name").value;
 	var password = document.getElementById("password").value;
 	var accountUniversity;
@@ -14,36 +14,41 @@ function registrarUniversidad() {
 			indexAccount += 1;
 			localStorage.setItem('indexAccount', indexAccount);
 	}
+
+	localStorage.setItem('accountUniversity', accountUniversity);
+
 	//Desbloqueamos la cuenta
-	web3.personal.unlockAccount(accountUniversity, password, 0);
+	try {
+		web3.personal.unlockAccount(accountUniversity, password, 0);
+	} catch { e => console.log(e) }
 
-	//TODO: Desplegamos un SC de Universidad
-
-
-	//TODO: Llamamos a la plataforma para registrar la universidad
-	SCPlataforma.registerUniversity(accountSCUniversity);
-
-	plataforma.registrarEmpresa.sendTransaction(address, nombre, cif, { from: accounts[0], gas: 200000 },
-		function (error, result) {
-			if (!error) {
-				var event = plataforma.EmpresaRegistrada({}, { fromBlock: 'latest', toBlock: 'latest' },
-					function (error, result) {
-						if (!error) {
-							var msg = "OK! Se ha creado correctamente la cuenta " + address + " para " + result.args._nombre + " con contraseña " + pss
-								+ "\n\n¡Apunta bien tu direccion para poder hacer login!";
-							console.log(msg);
-							var ask = window.confirm(msg);
-							if (ask) {
-								window.location.href = "index.html";
-							}
-						} else {
-							console.log("Error" + error);
-						}
-					});
-			} else {
-				console.error("Error" + error);
-			}
+	//Desplegamos un nuevo SC de Universidad
+	let SCUniversity;
+	await deploySmartContract('University', accountUniversity, ABI_University, DATA_University,
+		[name, accountSCECTSToken]).then(v => {
+			SCUniversity = v;
 		});
+	accountSCUniversity = SCUniversity._address;
+	localStorage.setItem('accountSCUniversity', accountSCUniversity);
+
+	//Llamamos a la plataforma para registrar la universidad
+	var tx = await SCPlataforma.methods.registerUniversity(accountUniversity, accountSCUniversity).send({
+		gas: 700000,
+		from: accountPlataforma
+	})
+	.then(function (result) {
+		console.log(result);
+			if (!error) {
+				var msg = `OK! Se ha creado correctamente la universidad ${name}`;
+				console.log(msg);
+				var ask = window.confirm(msg);
+				if (ask) {
+					window.location.href = "index.html";
+				}
+			} else {
+				console.log("Error" + error);
+			}
+	});
 
 	//Bloqueamos nuevamente la cuenta
 	web3.personal.lockAccount(accountUniversity, password);

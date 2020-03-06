@@ -17,34 +17,3 @@ async function install() {
 
     document.location = "config.html";
 }
-
-async function deploySmartContract(scname, account, abi, data, _arguments) {
-    let newContractInstance;
-    var Contract = new web3.eth.Contract(abi)
-    var tx = await Contract.deploy({
-        data: data,
-        arguments: _arguments
-    }).send({
-        gas: 6000000,
-        from: account
-    }, function (error, transactionHash) {
-        if (error) console.log(error);
-    })
-        .on('error', function (error) {
-            if (error) console.log(error);
-        })
-        .on('transactionHash', function (transactionHash) {
-            //console.log(transactionHash);
-        })
-        .on('receipt', function (receipt) {
-            //console.log(receipt.contractAddress)
-        })
-        .on('confirmation', function (confirmationNumber, receipt) {
-            //console.log(confirmationNumber);
-        })
-        .then(function (_newContractInstance) {
-            newContractInstance = _newContractInstance;
-            console.log(`Nueva instancia contrato ${scname}: ${newContractInstance._address}`);
-        });
-    return newContractInstance;
-}

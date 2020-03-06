@@ -1,15 +1,17 @@
 pragma solidity ^0.6.0;
 
 import "./UniversityPlatform.sol";
+import "./University.sol";
 import "./SubjectToken.sol";
 import "./ECTSToken.sol";
-import "./openzeppelin/GSN/Context.sol";
+import "./openzeppelin/ownership/Ownable.sol";
 
 /**
  * @dev El SM Students se encarga de la gestión de los estudiantes.
  * El estudiante comprará ECTSToken que luego intercambiará por matriculas en asignaturas mediante un deposito en la universidad
  */
-contract Student is Context {
+contract Student is Ownable {
+    using SafeMath for uint256;
     
     //Estructura para guardar depositos
     struct Deposit{
@@ -24,7 +26,6 @@ contract Student is Context {
     }
     
     //Campos de información privados
-    address private _accountOwner; //Cuenta de estudiante propietaria de la instancia
     string private _name; //Nombre del estudiante
 
 
@@ -35,12 +36,10 @@ contract Student is Context {
     
     /**
      * @dev Inicializa el contrato apuntando a los SC que se relacionan con este.
-     * @param accountOwner Dirección de la cuenta del estudiante que será propietario de esta instancia del smart contract
      * @param name Nombre del estudiante
      * @param scAddressToken Es la address del ECTSToken desplegado por la plataforma para los pagos
      */
-    constructor(address accountOwner, string memory name, address scAddressToken) public{
-        _accountOwner = accountOwner;
+    constructor(string memory name, address scAddressToken) public{
         _name = name;
         _token = ECTSToken(scAddressToken);
         _totalDeposits = 0;
@@ -61,13 +60,6 @@ contract Student is Context {
     function name() public view returns (string memory) {
         return _name;
     }
-
-    /**
-     * @dev Devuelve la cuenta propietaria de la instancia del smart contract
-     */
-    function accountOwner() private view returns (address) {
-        return _accountOwner;
-    }
     
     /*
     * @dev Recupera una lista de las asignaturas en las que el alumno está matriculado
@@ -78,30 +70,21 @@ contract Student is Context {
     }
 
     /*
-    * @dev Modifier que se utiliza para comprobar que el msg.sender es la cuenta de universidad propietaria.
-    */
-    modifier onlyAccountOwner(){
-        if(msg.sender==_accountOwner){
-            _;
-        }
-    }
-    
-    /*
     * @dev Se depositan tokens ECTSToken en un deposito particular de este alumno en la universidad que se indica
     * Se restringe el método únicamente a la cuenta del estudiante propietario de esta instancia del contract
-    * @param accountUniversity Cuenta de la universidad a la que queremos transferir los tokens
+    * @param accountSCUniversity Cuenta del smartcontract de la universidad a la que queremos transferir los tokens
     * @param amountTokens Cantidad de tokens que se quieren depositar
     */
-    function makeAnIncome(address accountUniversity, uint amountTokens) public onlyAccountOwner returns (bool){
+    function makeAnIncome(address accountSCUniversity, uint amountTokens) public onlyOwner returns (bool){
         // Marcamos la cuenta de la universidad como aprobada para transferir la cantidad de tokens indicada
-        _token.approve(accountUniversity, amountTokens);
+        _token.approve(accountSCUniversity, amountTokens);
         
         // Reconstruimos el enlace con la universidad y le decimos que se transfiera ahora los tokens
-        University univ = University(accountUniversity);
-        univ.makeAnIncome(amountTokens);
+        University univ = University(accountSCUniversity);
+        univ.makeAnIncome(_name, amountTokens);
         
         // Guarda en el registro de depositos la información
-        require(addDeposit(accountUniversity,amountTokens));
+        require(addDeposit(accountSCUniversity,amountTokens));
         
         return true;
     }
@@ -111,13 +94,13 @@ contract Student is Context {
     * @param accountUniversity Cuenta de la universidad a la que queremos transferir los tokens
     * @param amountTokens Cantidad de tokens que se quieren depositar
     */
-    function addDeposit(address accountUniversity, uint amountTokens) private returns (bool){
-        if (!_universityDepositBalance[accountUniversity].exists){
-            _universitiesWithDeposit[_totalDeposits] = accountUniversity;
+    function addDeposit(address accountSCUniversity, uint amountTokens) private returns (bool){
+        if (!_universityDepositBalance[accountSCUniversity].exists){
+            _universitiesWithDeposit[_totalDeposits] = accountSCUniversity;
             _totalDeposits++;
         }
-        _universityDepositBalance[accountUniversity].exists = true;
-        _universityDepositBalance[accountUniversity].balance += amountTokens; 
+        _universityDepositBalance[accountSCUniversity].exists = true;
+        _universityDepositBalance[accountSCUniversity].balance += amountTokens; 
         return true;
     } 
     
@@ -125,7 +108,7 @@ contract Student is Context {
     * @dev Devuelve un array de direcciones de universidades en las que se tiene deposito
     * Las llamadas únicamente las puede realizar el propietario de esta cuenta de estudiante
     */
-    function getUniversitiesWithDeposit() public view onlyAccountOwner returns (address[] memory){
+    function getUniversitiesWithDeposit() public view onlyOwner returns (address[] memory){
         address[] memory _univs; new address[](_totalDeposits + 1);
         for(uint i = 0 ; i<=_totalDeposits; i++) {
             _univs[i] = _universitiesWithDeposit[i];
@@ -137,9 +120,9 @@ contract Student is Context {
     * @dev Devuelve la cantidad de tokens que se tienen en el deposito de una universidad
     * Las llamadas únicamente las puede realizar el propietario de esta cuenta de estudiante
     */
-    function getDepositInUniversity(address univ) public view onlyAccountOwner returns (uint256){
-        if (_universityDepositBalance[univ].exists){
-            return _universityDepositBalance[univ].balance;
+    function getDepositInUniversity(address scuniv) public view onlyOwner returns (uint256){
+        if (_universityDepositBalance[scuniv].exists){
+            return _universityDepositBalance[scuniv].balance;
         }
         else{
             return 0;
@@ -150,17 +133,17 @@ contract Student is Context {
     * @dev Matricula al alumno en una asignatura
     * Únicamente se puede llamar a este método desde la propia cuenta del estudiante
     * Primero verifica que no esté ya matriculado
-    * @param accountUniversity Cuenta de la asignatura universidad que ofrece la asignatura
-    * @param accountSubject Cuenta de la asignatura en la que quiere matricularse
+    * @param accountSCUniversity Cuenta de la asignatura universidad que ofrece la asignatura
+    * @param accountSCSubject Cuenta de la asignatura en la que quiere matricularse
     * @returns uint256 TokenId, el identificador que representa su matrícula
     */
-    function enrollInSubject(address accountUniversity, address accountSubject) public onlyAccountOwner returns (uint256){
-        require(!_subjectsEnrollements[accountSubject].exists, "University: Student is already enrolled.");
-        University univ = University(accountUniversity);
-        uint256 tokenId = univ.enrollInSubject(accountSubject);
-        _subjectsInWitchEnrolled.push(accountSubject);
-        _subjectsEnrollements[accountSubject].tokenid = tokenId;
-        _subjectsEnrollements[accountSubject].exists = true;
+    function enrollInSubject(address accountSCUniversity, address accountSCSubject) public onlyOwner returns (uint256){
+        require(!_subjectsEnrollements[accountSCSubject].exists, "University: Student is already enrolled.");
+        University univ = University(accountSCUniversity);
+        uint256 tokenId = univ.enrollInSubject(accountSCSubject);
+        _subjectsInWitchEnrolled.push(accountSCSubject);
+        _subjectsEnrollements[accountSCSubject].tokenid = tokenId;
+        _subjectsEnrollements[accountSCSubject].exists = true;
         return tokenId;
     }
     

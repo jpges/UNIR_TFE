@@ -1,3 +1,3 @@
 var environment = 'ganache';
-var accountSCECTSToken = '0xC0946f3fb38Dbf29FF28606327DADc6729d9d4Df';
-var accountSCPlataforma = '0xf144D4bfef02766f409606DFec82c9faCCd97F31';
+var accountSCECTSToken = '0xb05CF7b466Ae387a8E6426C080883ebC420cF007';
+var accountSCPlataforma = '0x42aEA7Da47d47B0d94FD4Eac74320d4fF32FE17F';

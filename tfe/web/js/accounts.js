@@ -7,7 +7,7 @@ var SMECTSToken;
 if (localStorage.getItem('indexAccount')===null){
     localStorage.setItem('indexAccount', 1); // Control de cuentas utilizadas. La cuenta 0 siempre la utiliza la plataforma, por eso marcamos el indice a 1 inicialmente
 }
-var indexAccount = localStorage.getItem('indexAccount'); 
+var indexAccount = parseInt(localStorage.getItem('indexAccount')); 
 
 async function initWeb3(){
     await settingAccounts();
@@ -76,7 +76,38 @@ async function unlockPlatformAccount() {
     console.log("Desbloqueada cuenta de la plataforma: " + accountPlataforma);
 }
 
+async function deploySmartContract(scname, account, abi, data, _arguments) {
+    let newContractInstance;
+    var Contract = new web3.eth.Contract(abi)
+    var tx = await Contract.deploy({
+        data: data,
+        arguments: _arguments
+    }).send({
+        gas: 6000000,
+        from: account
+    }, function (error, transactionHash) {
+        if (error) console.log(error);
+    })
+        .on('error', function (error) {
+            if (error) console.log(error);
+        })
+        .on('transactionHash', function (transactionHash) {
+            //console.log(transactionHash);
+        })
+        .on('receipt', function (receipt) {
+            //console.log(receipt.contractAddress)
+        })
+        .on('confirmation', function (confirmationNumber, receipt) {
+            //console.log(confirmationNumber);
+        })
+        .then(function (_newContractInstance) {
+            newContractInstance = _newContractInstance;
+            console.log(`Nueva instancia contrato ${scname}: ${newContractInstance._address}`);
+        });
+    return newContractInstance;
+}
+
 function getSmartContrats() {
-    SCPlataforma = web3.eth.contract(ABI_UniversityPlatform).at(accountSCPlataforma);
-    SMECTSToken = web3.eth.contract(ABI_ECTSToken).at(accountSCECTSToken);
+    SCPlataforma = new web3.eth.Contract(ABI_UniversityPlatform, accountSCPlataforma);
+    SCECTSToken = new web3.eth.Contract(ABI_ECTSToken, accountSCECTSToken);
 }

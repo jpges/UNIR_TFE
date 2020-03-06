@@ -2,16 +2,34 @@ pragma solidity ^0.6.0;
 
 import "./SubjectToken.sol";
 import "./ECTSToken.sol";
+import "./openzeppelin/ownership/Ownable.sol";
+import "./openzeppelin/math/SafeMath.sol";
 
 /**
  * @dev El smart contract University representa una universidad dentro de la plataforma.
  * Puede crear nuevos tokens no fungibles llamados SubjectToken que representan a las diferentes asignaturas.
  * Tiene un deposito de tokens ECTSToken que transfieren los alumnos para poder matricularse en las asignaturas.
  */
-contract University{
+contract University is Ownable{
+    using SafeMath for uint256;
     
+    //Structs para agilizar el intercambio de información
+    struct StructSubject {
+        address accountSCSubject;
+        string subjectname;
+        string symbol;
+        uint256 price;
+        string descriptionURI;
+        bool exists;
+    }
+
+    struct StructDeposit {
+        address accountstudent;
+        string studentname;
+        uint256 balance;
+    }
+
     //Campos de información privados
-    address private _accountOwner; //Cuenta de universidad propietaria de la instancia
     string private _name; //Nombre de la universidad
     
     // Objectos privados que apuntan a los SC relacionados
@@ -23,22 +41,21 @@ contract University{
     
     /**
      * @dev Inicializa el contrato apuntando a los SC que se relacionan con este.
-     * @param accountOwner Dirección de la cuenta de universidad que será propietaria de esta instancia del smart contract
      * @param name Nombre de la universidad
      * @param scAddressToken Es la address del ECTSToken desplegado por la plataforma para los pagos
      */
-    constructor(address accountOwner, string memory name, address scAddressToken) public{
-        _accountOwner = accountOwner;
+    constructor(string memory name, address scAddressToken) public{
         _name = name;
         _token = ECTSToken(scAddressToken);
     }
     
     // Guardamos las asignaturas emitidas por la universidad
     address[] private _subjectsUniversity;
-    mapping (address => bool) private _subjects;
+    mapping (address => StructSubject) private _subjects;
 
     // Guardamos un deposito de tokens ECTSToken para cada estudiante que lo adquiere
-    mapping (address => uint256 ) private _universityStudentBalances;
+    address[] private _deposits;
+    mapping (address => StructDeposit ) private _universityStudentBalances;
 
     /**
      * @dev Devuelve el nombre de la universidad.
@@ -48,43 +65,27 @@ contract University{
     }
 
     /**
-     * @dev Devuelve la cuenta propietaria de la instancia del smart contract
-     */
-    function accountOwner() public view returns (address) {
-        return _accountOwner;
-    }
-
-    /*
-    * @dev Modifier que se utiliza para comprobar que el msg.sender es la cuenta de universidad propietaria.
-    */
-    modifier onlyAccountOwner(){
-        if(msg.sender==_accountOwner){
-            _;
-        }
-    }
-    
-    /**
      * @dev Indica si la cuenta recibida por parámetro representa una instancia de SubjectToken registrado por esta universidad
      * @param account es la cuenta que se quiere comprobar
      * @return bool Indica si es o no una cuenta registrada
      */
     function isPublisedSubject(address account) private view returns (bool){
-        return _subjects[account];
+        return _subjects[account].exists;
     }
     
     /**
      * @dev Indica si el deposito existente de una cuenta es superior al precio recibido
-     * @param account es la cuenta que se quiere comprob
+     * @param account es la cuenta que se quiere comprobar
      * @param price de la asignatura
      * @return bool Suciente o no
      */
     function enoughDeposit(address account, uint256 price) private view returns (bool){
-        return (_universityStudentBalances[account] >= price);
+        return (_universityStudentBalances[account].balance >= price);
     }
     
     /*
     * @dev Se despliega un nuevo token SubjectToken que representa una asignatura
-    * Únicamente pueden llamar a este método universidades registradas en la plataforma
+    * Únicamente puede llamar la universidad propietaria del smart contract
     * @param subjectname Nombre de la asignatura
     * @param symbol Símbolo que representa la asignatura
     * @param limitmint Número máximo de token que se pueden mintar de esta asignatura
@@ -93,19 +94,45 @@ contract University{
     * @param descriptionURI Una URL que apuntará al temario de la asignatura. Se transferirá a todos los tokens mintados.
     * @return address La cuenta del nuevo token desplegado
     */
-    function createSubject(string memory subjectname, string memory symbol, uint256 limitmint, uint256 expirationtime, uint256 price, string memory descriptionURI) public onlyAccountOwner returns (address) {
+    function createSubject(string memory subjectname, string memory symbol, uint256 limitmint,
+        uint256 expirationtime, uint256 price, string memory descriptionURI) public onlyOwner returns (address) {
         SubjectToken _subjectToken = new SubjectToken(subjectname, symbol, limitmint, expirationtime, price, descriptionURI);
+        StructSubject memory strSubject = StructSubject(address(_subjectToken), subjectname, symbol, price, descriptionURI, true);
         _subjectsUniversity.push(address(_subjectToken));
-        _subjects[address(_subjectToken)]=true;
+        _subjects[address(_subjectToken)] = strSubject;
         return (address(_subjectToken));
     }
     
     /*
     * @dev Recupera una lista de las asignaturas publicadas por la universidad
-    * @return address[] Array con las cuentas de las asignaturas
+    * @return address[] Array con las direcciones de las asignaturas
     */
     function getSubjects() public view returns(address[] memory){
         return _subjectsUniversity;
+    }
+    
+    /*
+    * @dev Recupera la información de una asignatura de la universidad
+    * @return (string, string, uint256, string) Información de la asignatura
+    */
+    function getSubject(address account) public view returns(string memory, string memory, uint256, string memory) {
+        return (_subjects[account].subjectname, _subjects[account].symbol, _subjects[account].price, _subjects[account].descriptionURI);
+    }
+    
+    /*
+    * @dev Recupera una lista de los depositos que tiene
+    * @return address[] Array con las cuentas de los depositos
+    */
+    function getDeposits() public view returns(address[] memory){
+        return _deposits;
+    }
+    
+    /*
+    * @dev Recupera la información de una asignatura de la universidad
+    * @return (string, uint256) Información del deposito
+    */
+    function getDeposit(address account) public view returns(string memory, uint256) {
+        return (_universityStudentBalances[account].studentname, _universityStudentBalances[account].balance);
     }
     
     /*
@@ -113,14 +140,17 @@ contract University{
     * Se emite un evento {DepositRegistred}
     * @param amountTokens Cantidad de tokens que se quieren depositar
     */
-    function makeAnIncome(uint amountTokens) public{
+    function makeAnIncome(string memory studentname, uint amountTokens) public{
         // Añade los tokens indicados en el depósito del alumno
-        _universityStudentBalances[msg.sender] += amountTokens;
+        _universityStudentBalances[_msgSender()].accountstudent = _msgSender();
+        _universityStudentBalances[_msgSender()].studentname = studentname;
+        _universityStudentBalances[_msgSender()].balance = (_universityStudentBalances[_msgSender()].balance).add(amountTokens);
+        _deposits.push(_msgSender());
 
         // Transfiere los tokens propiedad del alumno de su cuenta a la de esta universidad.
         // Antes de llamar a este método el alumno deberá haber aprobado la cuenta de esta universidad para la cantidad de tokens que quiere transferir
-        _token.transferFrom(msg.sender, address(this), amountTokens);
-        emit DepositRegistred(msg.sender, address(this), amountTokens);
+        _token.transferFrom(_msgSender(), owner(), amountTokens);
+        emit DepositRegistred(_msgSender(), owner(), amountTokens);
     }
     
     /*
@@ -132,9 +162,9 @@ contract University{
     function enrollInSubject(address accountSubject) public returns (uint256){
         require(isPublisedSubject(accountSubject), "University: accountSubject not found.");
         SubjectToken sub = SubjectToken(accountSubject);
-        require(enoughDeposit(msg.sender, sub.price()), "University: Not enough tokens in deposit.");
-        uint256 tokenId = sub.mint(msg.sender);
-        emit EnrolledInSubject(msg.sender, accountSubject, tokenId);
+        require(enoughDeposit(_msgSender(), sub.price()), "University: Not enough tokens in deposit.");
+        uint256 tokenId = sub.mint(_msgSender());
+        emit EnrolledInSubject(_msgSender(), accountSubject, tokenId);
         return tokenId;
     }
 }
