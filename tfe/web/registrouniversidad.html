@@ -7,29 +7,17 @@
     <meta name="description" content="">
     <title>ESUMP - Registro Universidades</title>
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- JS Script libraries de terceros -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
 
-
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
-    <!-- Custom styles for this template -->
+    <!-- Estilos y js propios de nuestra aplicación -->
     <link href="tfe.css" rel="stylesheet">
+    <script src="config.js"></script>
+    <script src="./js/contracts.js"></script>
+    <script src="./js/accounts.js"></script>
 </head>
 
 <body class="bg-light">
@@ -42,17 +30,23 @@
             <form role="form">
                 <div class="form-group">
                     <label for="name">Nombre</label>
-                    <input type="text" class="form-control" id="name" placeholder="Introduzca el nombre de la universidad">
+                    <input type="text" class="form-control" id="name"
+                        placeholder="Introduzca el nombre de la universidad">
                 </div>
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <input type="password" class="form-control" id="password" placeholder="Contraseña">
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-lg btn-primary">Enviar</button>
+                    <input type="button" class="btn btn-lg btn-primary" id="ok">Enviar</button>
                 </div>
             </form>
         </div>
+    </div>
+    <script>
+        $().ready(function() {initWeb3(); getSmartContrats();});
+        $('#ok').click(function () { registrarUniversidad(); });
+    </script>
 </body>
 
 </html>

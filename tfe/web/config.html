@@ -29,15 +29,17 @@
                 <div class="alert alert-danger">
                     <strong>¡IMPORTANTE!</strong> Para concluir la instalación, debe sustituir totalmente el contenido
                     del fichero "<strong>config.js</strong>" que encontrará en la raiz de
-                    la web, por el código que se muestra a continuación.
+                    la web, por el código que se muestra a continuación. Tras guardar el fichero modificado, pulse continuar.
                 </div>
                 <div id="code"></div>
             </div>
         </div>
+        <button class="btn btn-lg btn-primary btn-block" type="button" id="continue">Continuar</button>
     </div> 
     <script type='text/javascript'>
-        let codeinstall = `<pre><code>var environment = '${localStorage.getItem('environment')}';\nvar accountSCPlataforma = '${localStorage.getItem('accountSCPlataforma')}';\nvar accountSCECTSToken = '${localStorage.getItem('accountSCECTSToken')}';</code></pre>`;
+        let codeinstall = `<pre><code>var environment = '${localStorage.getItem('environment')}';\nvar accountSCECTSToken = '${localStorage.getItem('accountSCECTSToken')}';\nvar accountSCPlataforma = '${localStorage.getItem('accountSCPlataforma')}';</code></pre>`;
         $('#code').html(codeinstall);
+        $('#continue').click(function () { window.location = 'index.html'; })
     </script>
 </body>
 

@@ -1,8 +1,6 @@
 pragma solidity ^0.6.0;
 
 import "./ECTSToken.sol";
-import "./University.sol";
-import "./Student.sol";
 import "./openzeppelin/ownership/Ownable.sol";
 
 /**
@@ -43,37 +41,33 @@ contract UniversityPlatform is Ownable{
      * @dev Inicializa el contrato desplegando el token ECTSToken.
      * También establece el precio inicial que queremos poner a los ECTS, pero posteriormente se puede cambiar manualmente.
      */
-    constructor() public {
-        _token = new ECTSToken();
-        setTokenPrice((76/100) * 10**18); //Inicialmente establezco el valor en 0,76 ETHER que son unos 150€
+    constructor(address scAddressToken) public {
+        _token = ECTSToken(scAddressToken);
+        _priceOfOneTokenInWei=((76/100) * 10**18); //Inicialmente establezco el valor en 0,76 ETHER que son unos 150€
     }
     
     /**
      * @dev La función se utiliza para registrar nuevas universidades en la plataforma.
      * Emite un evento {UniversityRegistred} con `account` de la nueva universidad registrada.
-     * @param account Cuenta de la universidad que queremos registrar en la plataforma
-     * @param name Nombre de la universidad
+     * @param accountUniversity Cuenta de la universidad que se registra
+     * @param accountSCUniversity Cuenta del smart contract propiedad de la universidad y que la representa
      */
-    function registerUniversity(address account, string memory name) public{
-        // Se despliega un nuevo sc University y se almacena en las variables de registro
-        University univ = new University(account, name, address(_token));
-        _universities[account] = address(univ);
-        _listUniversities.push(account);
-        emit UniversityRegistred(account);
+    function registerUniversity(address accountUniversity, address accountSCUniversity) public onlyOwner{ 
+        _universities[accountUniversity] = accountSCUniversity;
+        _listUniversities.push(accountUniversity);
+        emit UniversityRegistred(accountUniversity);
     }
     
     /**
      * @dev La función se utiliza para registrar nuevos estudiantes en la plataforma.
      * Emite un evento {StudentRegistred} con el `account` del nuevo estudiante registrado.
-     * @param account Cuenta del estudiante que queremos registrar en la plataforma
-     * @param name Nombre del estudiante
+     * @param accountStudent Cuenta del estudiante que se registra
+     * @param accountSCStudent Cuenta del smart contract propiedad del estudiante y que la representa
      */
-    function registerStudent(address account, string memory name) public{
-        // Se despliega un nuevo sc Student y se almacena en las variables de registro
-        Student stud = new Student(account, name, address(_token));
-        _students[account] = address(stud);
-        _listStudents.push(account);
-        emit StudentRegistred(account);
+    function registerStudent(address accountStudent, address accountSCStudent) public onlyOwner{
+        _students[accountStudent] = accountSCStudent;
+        _listStudents.push(accountStudent);
+        emit StudentRegistred(accountStudent);
     }
     
     /**
@@ -88,7 +82,7 @@ contract UniversityPlatform is Ownable{
     * plataforma o la propia cuenta gestora.
     */
     modifier onlyRegistredUser(){
-        if((_universities[msg.sender] != address(0x0)) || (_students[msg.sender] != address(0x0)) || (msg.sender == owner())){
+        if((_universities[_msgSender()] != address(0x0)) || (_students[_msgSender()] != address(0x0)) || (_msgSender() == owner())){
             _;
         }
     }
@@ -117,7 +111,7 @@ contract UniversityPlatform is Ownable{
     function buyTokens(address beneficiary) public payable {
         require(beneficiary != address(0));
         require(msg.value != 0);
-        //TODO: Requerir que el que compra esté registrado como estudiante en la plataforma.
+        require((_students[_msgSender()] != address(0x0))); //Requerir que el que compra esté registrado como estudiante en la plataforma.
 
         uint256 amounttokens = msg.value.div(_priceOfOneTokenInWei);
         _weiRaised = _weiRaised.add(msg.value);

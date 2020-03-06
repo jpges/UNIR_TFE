@@ -1,7 +1,13 @@
 var web3 = null;
 var accounts = null;
 var accountPlataforma = null;
-var indexAccount = 1; // Control de cuentas utilizadas. La cuenta 0 siempre la utiliza la plataforma, por eso marcamos el indice a 1 inicialmente
+var SCPlataforma;
+var SMECTSToken;
+
+if (localStorage.getItem('indexAccount')===null){
+    localStorage.setItem('indexAccount', 1); // Control de cuentas utilizadas. La cuenta 0 siempre la utiliza la plataforma, por eso marcamos el indice a 1 inicialmente
+}
+var indexAccount = localStorage.getItem('indexAccount'); 
 
 async function initWeb3(){
     await settingAccounts();
@@ -68,4 +74,9 @@ async function unlockPlatformAccount() {
     }
     web3.eth.defaultAccount = accountPlataforma;
     console.log("Desbloqueada cuenta de la plataforma: " + accountPlataforma);
+}
+
+function getSmartContrats() {
+    SCPlataforma = web3.eth.contract(ABI_UniversityPlatform).at(accountSCPlataforma);
+    SMECTSToken = web3.eth.contract(ABI_ECTSToken).at(accountSCECTSToken);
 }
