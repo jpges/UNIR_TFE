@@ -26,6 +26,7 @@ contract University is Ownable{
     address private _addrtoken;
     
     //Events
+    event PublishNewSubject(string subjectname, address accountSCSubject);
     event DepositRegistred(address _from, address _to, uint256 _amount);
     event EnrolledInSubject(address _to, address subject, uint256 tokenId);
     
@@ -89,7 +90,7 @@ contract University is Ownable{
         SubjectToken _subjectToken = new SubjectToken(subjectname, symbol, limitmint, expirationtime, price, descriptionURI);
         _subjectsUniversity.push(address(_subjectToken));
         _subjects[address(_subjectToken)] = true;
-        //TODO: Emitir evento de creación de asignatura
+        emit PublishNewSubject(subjectname,address(_subjectToken));
         return (address(_subjectToken));
     }
     

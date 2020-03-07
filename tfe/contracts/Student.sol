@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.6.1;
 
 import "./UniversityPlatform.sol";
 import "./University.sol";
@@ -68,6 +68,15 @@ contract Student is Ownable {
     function getSubjectsInWitchEnrolled() public view returns(address[] memory){
         return _subjectsInWitchEnrolled;
     }
+    
+    /*
+    * @dev Recupera el tokenid de la matricula del alumno
+    ] @param accountSCSubject es la cuenta del smart contract que representa la asignatura
+    * @return uint256 Tokenid de la matricula del alumno
+    */
+    function getEnrollementTokenId(address accountSCSubject) public view returns(uint256){
+        return _subjectsEnrollements[accountSCSubject].tokenid;
+    }
 
     /*
     * @dev Se depositan tokens ECTSToken en un deposito particular de este alumno en la universidad que se indica
@@ -109,7 +118,7 @@ contract Student is Ownable {
     * Las llamadas únicamente las puede realizar el propietario de esta cuenta de estudiante
     */
     function getUniversitiesWithDeposit() public view onlyOwner returns (address[] memory){
-        address[] memory _univs; new address[](_totalDeposits + 1);
+        address[] memory _univs = new address[](_totalDeposits + 1);
         for(uint i = 0 ; i<=_totalDeposits; i++) {
             _univs[i] = _universitiesWithDeposit[i];
         }

@@ -11,18 +11,27 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <!-- Custom styles for this template -->
+    <!-- JS Script libraries de terceros -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
+
+    <!-- Estilos y js propios de nuestra aplicación -->
     <link href="tfe.css" rel="stylesheet">
-    <script src="/js/logic.js"></script>
+    <script src="config.js"></script>
+    <script src="./js/contracts.js"></script>
+    <script src="./js/accounts.js"></script>
+    <script src="./js/logic.js"></script>
 </head>
 
 <body class="text-center">
-    <form class="form-signin" onsubmit="loginEstudiante();" >
+    <form class="form-signin" id="formRegistro">
         <h1 class="h3 mb-3 font-weight-normal">Acceso Estudiantes</h1>
         <label for="inputAccount" class="sr-only">Cuenta</label>
-        <input type="text" id="inputAccount" class="form-control" placeholder="Cuenta" required autofocus>
+        <input type="text" id="inputAccount" class="form-control" placeholder="Cuenta">
         <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password">
         <div class="checkbox mb-3">
             <label>
                 <input type="button" value="Registrarse" onclick="window.location = 'registroestudiante.html';">
@@ -31,6 +40,23 @@
         <button class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
         <p class="mt-5 mb-3 text-muted">TFE - JPGES &copy; 2020</p>
     </form>
+    <div id="loader"></div>
+    <script type='text/javascript'>
+        $().ready(function () { initWeb3(); getSmartContrats(); });
+        $('#formRegistro').submit(function () {
+            $('#loader').show();
+            loginEstudiante()
+                .then(function (result) {
+                    if (result !== "") {
+                        console.log(`Acceso ${document.getElementById("inputAccount").value}, ${result}`);
+                        document.location = "/estudiantes.html";
+                    } else {
+                        console.error("ERROR REGISTRO LOGIN ESTUDIANTES");
+                    };
+                });
+            return false;
+        });
+    </script>
 </body>
 
 </html>

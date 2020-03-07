@@ -27,7 +27,7 @@
 
 <body class="text-center">
     <h1 class="h2 mt-5 font-weight-normal">Instalación de la plataforma</h1>
-    <form class="form">
+    <form class="form" id="forminstall">
         <div class="mt-5 text-primary">
             <label>Seleccione la red en la que se encuentra</label>
         </div>
@@ -47,17 +47,27 @@
             </label>
         </div>
         <div class="p-5">
-            <button class="btn btn-primary" id="install" type="button">Instalar</button>
+            <button class="btn btn-primary" id="install" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Instalando">Instalar</button>
         </div>
         <p class="mt-5 mb-3 text-muted">TFE - JPGES © 2020</p>
     </form>
+    <div id="loader"></div>
     <script type='text/javascript'>
-        $('#install').click(async function () { 
+        $().ready(function () { initWeb3();});
+        $('#forminstall').submit(function () {
+            $('#loader').show();
             environment = $('input[name=optradio]:checked').val();
             localStorage.setItem('environment', environment);
-            await initWeb3();
-            await install(); 
-        });
+            install()
+                .then(function (result) {
+                    $('#loader').hide();
+                    if (result) {
+                        document.location = "config.html";
+                    }
+                }
+                );
+            return false;
+        }); 
     </script>
 </body>
 

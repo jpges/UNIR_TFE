@@ -29,17 +29,15 @@
     <div class="container">
         <div class="my-2 card" style="width: 30rem;">
             <div class="card-body">
-                <h5 class="card-title float-left">José Pastor</h5> <button type="submit"
-                    class="btn btn-danger float-right">
-                    <span class="glyphicon glyphicon-log-out"></span> Cerrar Sesión
-                </button>
+                <h5 class="card-title float-left" id="name"></h5> <button type="button"
+                    class="btn btn-danger float-right" id="cerrar">Cerrar Sesión</button>
             </div>
         </div>
 
         <div class="my-2 card">
             <div class="card-header">Lista de matrículas</div>
             <div class="card-body">
-                <table class="table">
+                <table class="table" id="tablamatriculas">
                     <thead>
                         <tr>
                             <th>Firstname</th>
@@ -48,30 +46,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
         <div class="my-2 card">
-            <div class="card-header">Lista de depósitos<a class="btn btn-primary text-light float-right" onclick="encadenar();">Transferir nuevo depósito</a></div>
+            <div class="card-header">Lista de depósitos<a class="btn btn-primary text-light float-right" id="comprarECTS">Comprar ECTS</a><a class="btn btn-primary text-light float-right  mx-2" id="nuevodeposito">Transferir nuevo depósito</a></div>
             <div class="card-body">
-                <table class="table">
+                <table class="table" id="tabladepositos">
                     <thead>
                         <tr>
                             <th>Firstname</th>
@@ -80,60 +63,40 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td><a href="#" class="btn btn-primary">Matrícular en
-                                    universidad</a></td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td><a href="#" class="btn btn-primary">Matrícular en
-                                    universidad</a></td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td><a href="#" class="btn btn-primary">Matrícular en
-                                    universidad</a></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
             <div class="card-footer "></div>
         </div>
-        <div class="card">
-            <div class="card-header">Consola</div>
-            <div class="card-body card-text">
-                <textarea class="form-control" id="consola" rows="5">
-                sadasdasdasdasda kjasdlkas jdaljd lakdj
-                s´ñ asldñasld ´ñasl
-                sañdlks añdlkñas da
-                asd kasdñka
-                sdasdkask daskd
-                asldñasldasd
-                asdsadsadsad
-                asdsadsadsada
-                asdasdasdasdasd
-                asdasdasdasdasd
-                asdasdsadsadasdsadasdasd
-                asdasdsadsadasdsadasdasdasd
-                asñld kasñlkdalkdj alskdj lask jdlkasjdlkasdlka sjdlkjsa sadas dasdsadasdasd asd adad ad as dasdasds
-            </textarea>
-            </div>
-        </div>
     </div>
+    <div id="loader"></div>
     <script type='text/javascript'>
-        $().ready(function () { initWeb3(); getSmartContrats(); });
-        $('#login').click(async function (){
-            var result = await loginUniversidad();
-            if (result){
-                document.location = "/universidades.html";
-            }
-            else{
-                alert(`La cuenta o el password son incorrectos`);
-            }
+        $().ready(function () {
+            $('#loader').show();
+            initWeb3();
+            getSmartContrats();
+            getNameEstudiante()
+                .then(function (result) {
+                    document.getElementById("name").innerText = result;
+                });
+            getTablaMatriculas()
+                .then(function (result) {
+                    addContentTable("tablamatriculas", result);
+                    $('#loader').hide();
+                });
+            getTablaDepositosPropios()
+                .then(function (result) {
+                    if (result!="0x0000000000000000000000000000000000000000"){
+                        addContentTable("tabladepositos", result);
+                    }
+                });
+        });
+        $('#cerrar').click(function () {
+            closeStudentSession();
+            document.location = "/index.html";
+        });
+        $('#comprarECTS').click(function () {
+            document.location = "/comprarects.html";
         });
     </script>
 </body>

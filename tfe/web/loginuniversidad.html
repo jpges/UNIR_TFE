@@ -48,14 +48,13 @@
             loginUniversidad()
                 .then(function (result) {
                     if (result !== "") {
-                        console.log(`Accesp ${document.getElementById("subjectname").value}, ${result}`);
+                        console.log(`Acceso ${document.getElementById("inputAccount").value}, ${result}`);
                         document.location = "/universidades.html";
                     } else {
-                        console.error("ERROR REGISTRO ASIGNATURA loginUniversidad: " + result);
+                        console.error("ERROR REGISTRO LOGIN UNIVERSIDAD");
                     };
-                    $('#loader').hide();
-                    location.replace = "/universidades.html";
                 });
+            return false;
         });
     </script>
 </body>

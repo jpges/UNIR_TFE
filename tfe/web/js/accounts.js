@@ -4,12 +4,12 @@ var accountPlataforma = null;
 var SCPlataforma;
 var SMECTSToken;
 
-if (localStorage.getItem('indexAccount')===null){
+if (localStorage.getItem('indexAccount') === null) {
     localStorage.setItem('indexAccount', 1); // Control de cuentas utilizadas. La cuenta 0 siempre la utiliza la plataforma, por eso marcamos el indice a 1 inicialmente
 }
-var indexAccount = parseInt(localStorage.getItem('indexAccount')); 
+var indexAccount = parseInt(localStorage.getItem('indexAccount'));
 
-async function initWeb3(){
+async function initWeb3() {
     await settingAccounts();
     await unlockPlatformAccount();
 }
@@ -50,15 +50,22 @@ async function settingAccounts() {
             }
             break;
     }
+    if (accounts.length <= indexAccount) {
+        console.error("************************************************************************************");
+        console.error("************************************************************************************");
+        console.error(" NO QUEDAN CUENTAS EN SU SISTEMA. SI NECESITA CREAR ALGUNA, DEBE REINICIARLO TODO");
+        console.error("************************************************************************************");
+        console.error("************************************************************************************");
+    }
     accountPlataforma = accounts[0];
     localStorage.setItem("accountPlataforma", accountPlataforma);
     console.log("CUENTAS INICIALIZADAS\n" + accounts);
 }
 
-function die(error, errorMessage){
+function die(error, errorMessage) {
     alert(errorMessage);
-    window.location.href = "about:blank";
     console.error(errorMessage + error);
+    window.location.href = "about:blank";
 }
 
 async function unlockPlatformAccount() {
@@ -76,7 +83,7 @@ async function unlockPlatformAccount() {
     console.log("Desbloqueada cuenta de la plataforma: " + accountPlataforma);
 }
 
-async function deploySmartContract(scname, account, abi, data, _arguments) {
+/* async function asyncDeployContract(scname, account, abi, data, _arguments) {
     let newContractInstance;
     var Contract = new web3.eth.Contract(abi)
     var tx = await Contract.deploy({
@@ -90,7 +97,7 @@ async function deploySmartContract(scname, account, abi, data, _arguments) {
     })
         .on('error', function (error, receipt) {
             console.log(`ERROR DESPLEGANDO CONTRATO ${scname}`);
-		    console.log("Error: " + error);
+            console.log("Error: " + error);
         })
         .on('receipt', function (receipt) {
             console.debug(receipt);
@@ -100,6 +107,47 @@ async function deploySmartContract(scname, account, abi, data, _arguments) {
             console.log(`Nueva instancia contrato ${scname}: ${newContractInstance._address}`);
         });
     return newContractInstance;
+} */
+
+async function asyncDeployContract(scname, account, abi, data, _arguments) {
+    const result = await deployContract(scname, account, abi, data, _arguments);
+    console.log(result);
+    return result;
+  }
+
+function deployContract(scname, account, abi, data, _arguments) {
+    let newContractInstance;
+    var Contract = new web3.eth.Contract(abi)
+    var tx;
+    try {
+        tx = Contract.deploy({
+            data: data,
+            arguments: _arguments
+        }).send({
+            gas: 6000000,
+            from: account
+        }, function (error, transactionHash) {
+            if (error) console.log(error);
+        })
+            .on('error', function (error, receipt) {
+                console.log(`ERROR DESPLEGANDO CONTRATO ${scname}`);
+                console.log("Error: " + error);
+            })
+            .on('receipt', function (receipt) {
+                console.debug(receipt);
+            })
+            .then(function (_newContractInstance) {
+                newContractInstance = _newContractInstance;
+                console.log(`Nueva instancia contrato ${scname}: ${newContractInstance._address}`);
+                return newContractInstance;
+            })
+            .catch((e) => {
+                console.log(`ERROR DESPLEGANDO CONTRATO: ${scname}` + e);
+            });
+    } catch (e) {
+        console.error(`ERROR DESPLEGANDO CONTRATO: ${scname}` + e);
+    }
+    return tx;
 }
 
 function getSmartContrats() {

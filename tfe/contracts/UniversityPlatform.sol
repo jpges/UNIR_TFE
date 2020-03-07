@@ -107,6 +107,15 @@ contract UniversityPlatform is Ownable{
     function getStudents() public view onlyRegistredUser returns (address[] memory) {
         return _listStudents;
     }
+    
+    /*
+    * @dev Recupera la dirección del smart contract de un estudiante asociado
+    * @param Cuenta del estudiante
+    * @return address de la cuenta del SC asociado
+    */
+    function getStudent(address accountStudent) public view onlyRegistredUser returns (address) {
+        return _students[accountStudent];
+    }
   
     /**
      * @dev Es la función que sirve para comprar tokens por parte del estudiante.
@@ -116,9 +125,9 @@ contract UniversityPlatform is Ownable{
      * @param beneficiary Es la cuenta que adquiere los tokens
      */
     function buyTokens(address beneficiary) public payable {
-        require(beneficiary != address(0));
-        require(msg.value != 0);
-        require((_students[_msgSender()] != address(0x0))); //Requerir que el que compra esté registrado como estudiante en la plataforma.
+        require(beneficiary != address(0), "buyTokens: Beneficiary is account 0.");
+        require(msg.value != 0, "buyTokens: value is 0.");
+        require((_students[beneficiary] != address(0)), "buyTokens: beneficiary isn't registred."); //Requerir que el que compra esté registrado como estudiante en la plataforma.
 
         uint256 amounttokens = msg.value.div(_priceOfOneTokenInWei);
         _weiRaised = _weiRaised.add(msg.value);

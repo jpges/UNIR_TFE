@@ -1,19 +1,14 @@
-async function install() {  
-    let _auxContractInstance;
-
+function install() { 
     //Desplegamos el ECTSToken
-    await deploySmartContract('ECTSToken', accountPlataforma, ABI_ECTSToken, DATA_ECTSToken).then(v => {
-        _auxContractInstance = v;
-    });
-    accountSCECTSToken = _auxContractInstance._address;
-    localStorage.setItem('accountSCECTSToken', accountSCECTSToken);
-
-    //Desplegamos el UniversityPlatform
-    await deploySmartContract('UniversityPlatform',accountPlataforma, ABI_UniversityPlatform, DATA_UniversityPlatform, [accountSCECTSToken]).then(v => {
-        _auxContractInstance = v;
-    });
-    accountSCPlataforma = _auxContractInstance._address;
-    localStorage.setItem('accountSCPlataforma', accountSCPlataforma);
-
-    document.location = "config.html";
+    return deployContract('ECTSToken', accountPlataforma, ABI_ECTSToken, DATA_ECTSToken).then(v => {
+        accountSCECTSToken = v._address;
+        localStorage.setItem('accountSCECTSToken', accountSCECTSToken);
+        //Desplegamos el UniversityPlatform
+        return deployContract('UniversityPlatform',accountPlataforma, ABI_UniversityPlatform,
+        DATA_UniversityPlatform, [accountSCECTSToken]).then(z => {
+            accountSCPlataforma = z._address;
+            localStorage.setItem('accountSCPlataforma', accountSCPlataforma);
+            return true;
+        });
+    });        
 }
