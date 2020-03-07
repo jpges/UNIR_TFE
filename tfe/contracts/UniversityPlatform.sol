@@ -95,6 +95,13 @@ contract UniversityPlatform is Ownable{
     }
     
     /*
+    * @dev Recupera la dirección del smart contract de una universidad asociada
+    */
+    function getUniversity(address accountUniversity) public view onlyRegistredUser returns (address) {
+        return _universities[accountUniversity];
+    }
+    
+    /*
     * @dev Para obtener una lista con todas las direcciones de estudiantes registrados
     */
     function getStudents() public view onlyRegistredUser returns (address[] memory) {

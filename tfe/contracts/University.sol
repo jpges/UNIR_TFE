@@ -12,16 +12,6 @@ import "./openzeppelin/math/SafeMath.sol";
  */
 contract University is Ownable{
     using SafeMath for uint256;
-    
-    //Structs para agilizar el intercambio de información
-    struct StructSubject {
-        address accountSCSubject;
-        string subjectname;
-        string symbol;
-        uint256 price;
-        string descriptionURI;
-        bool exists;
-    }
 
     struct StructDeposit {
         address accountstudent;
@@ -33,7 +23,7 @@ contract University is Ownable{
     string private _name; //Nombre de la universidad
     
     // Objectos privados que apuntan a los SC relacionados
-    ECTSToken private _token;
+    address private _addrtoken;
     
     //Events
     event DepositRegistred(address _from, address _to, uint256 _amount);
@@ -46,12 +36,12 @@ contract University is Ownable{
      */
     constructor(string memory name, address scAddressToken) public{
         _name = name;
-        _token = ECTSToken(scAddressToken);
+        _addrtoken = scAddressToken;
     }
     
     // Guardamos las asignaturas emitidas por la universidad
     address[] private _subjectsUniversity;
-    mapping (address => StructSubject) private _subjects;
+    mapping (address => bool) private _subjects;
 
     // Guardamos un deposito de tokens ECTSToken para cada estudiante que lo adquiere
     address[] private _deposits;
@@ -70,7 +60,7 @@ contract University is Ownable{
      * @return bool Indica si es o no una cuenta registrada
      */
     function isPublisedSubject(address account) private view returns (bool){
-        return _subjects[account].exists;
+        return _subjects[account];
     }
     
     /**
@@ -97,9 +87,9 @@ contract University is Ownable{
     function createSubject(string memory subjectname, string memory symbol, uint256 limitmint,
         uint256 expirationtime, uint256 price, string memory descriptionURI) public onlyOwner returns (address) {
         SubjectToken _subjectToken = new SubjectToken(subjectname, symbol, limitmint, expirationtime, price, descriptionURI);
-        StructSubject memory strSubject = StructSubject(address(_subjectToken), subjectname, symbol, price, descriptionURI, true);
         _subjectsUniversity.push(address(_subjectToken));
-        _subjects[address(_subjectToken)] = strSubject;
+        _subjects[address(_subjectToken)] = true;
+        //TODO: Emitir evento de creación de asignatura
         return (address(_subjectToken));
     }
     
@@ -109,14 +99,6 @@ contract University is Ownable{
     */
     function getSubjects() public view returns(address[] memory){
         return _subjectsUniversity;
-    }
-    
-    /*
-    * @dev Recupera la información de una asignatura de la universidad
-    * @return (string, string, uint256, string) Información de la asignatura
-    */
-    function getSubject(address account) public view returns(string memory, string memory, uint256, string memory) {
-        return (_subjects[account].subjectname, _subjects[account].symbol, _subjects[account].price, _subjects[account].descriptionURI);
     }
     
     /*
@@ -149,6 +131,7 @@ contract University is Ownable{
 
         // Transfiere los tokens propiedad del alumno de su cuenta a la de esta universidad.
         // Antes de llamar a este método el alumno deberá haber aprobado la cuenta de esta universidad para la cantidad de tokens que quiere transferir
+        ECTSToken _token = ECTSToken(_addrtoken);
         _token.transferFrom(_msgSender(), owner(), amountTokens);
         emit DepositRegistred(_msgSender(), owner(), amountTokens);
     }

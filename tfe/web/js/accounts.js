@@ -88,17 +88,12 @@ async function deploySmartContract(scname, account, abi, data, _arguments) {
     }, function (error, transactionHash) {
         if (error) console.log(error);
     })
-        .on('error', function (error) {
-            if (error) console.log(error);
-        })
-        .on('transactionHash', function (transactionHash) {
-            //console.log(transactionHash);
+        .on('error', function (error, receipt) {
+            console.log(`ERROR DESPLEGANDO CONTRATO ${scname}`);
+		    console.log("Error: " + error);
         })
         .on('receipt', function (receipt) {
-            //console.log(receipt.contractAddress)
-        })
-        .on('confirmation', function (confirmationNumber, receipt) {
-            //console.log(confirmationNumber);
+            console.debug(receipt);
         })
         .then(function (_newContractInstance) {
             newContractInstance = _newContractInstance;

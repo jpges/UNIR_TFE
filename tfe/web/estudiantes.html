@@ -11,26 +11,18 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+    <!-- JS Script libraries de terceros -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
 
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
-    <!-- Custom styles for this template -->
+    <!-- Estilos y js propios de nuestra aplicación -->
     <link href="tfe.css" rel="stylesheet">
-    <script src="/js/logic.js"></script>
+    <script src="config.js"></script>
+    <script src="./js/contracts.js"></script>
+    <script src="./js/accounts.js"></script>
+    <script src="./js/logic.js"></script>
 </head>
 
 <body style="padding-top: 10px;">
@@ -132,6 +124,18 @@
             </div>
         </div>
     </div>
+    <script type='text/javascript'>
+        $().ready(function () { initWeb3(); getSmartContrats(); });
+        $('#login').click(async function (){
+            var result = await loginUniversidad();
+            if (result){
+                document.location = "/universidades.html";
+            }
+            else{
+                alert(`La cuenta o el password son incorrectos`);
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>ESUMP - Registro Asignaturas</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- JS Script libraries de terceros -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
+
+    <!-- Estilos y js propios de nuestra aplicación -->
+    <link href="tfe.css" rel="stylesheet">
+    <script src="config.js"></script>
+    <script src="./js/contracts.js"></script>
+    <script src="./js/accounts.js"></script>
+    <script src="./js/logic.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container">
+        <div class="py-5 text-center">
+            <h2>Registro de Asignaturas</h2>
+            <p class="lead">Rellene la información de la nueva asignatura.</p>
+        </div>
+        <div class="w-75 mx-auto">
+            <form id="registryform">
+                <div class="form-group">
+                    <label for="subjectname">Nombre asignatura</label>
+                    <input type="text" class="form-control" id="subjectname"
+                        placeholder="Introduzca el nombre de la nueva asignatura" required>
+                </div>
+                <div class="form-group">
+                    <label for="symbol">Símbolo de la asignatura</label>
+                    <input type="text" class="form-control" id="symbol"
+                        placeholder="Introduzca el símbolo de la nueva asignatura" required>
+                </div>
+                <div class="form-group">
+                    <label for="limitmint">Número máximo matriculados</label>
+                    <input type="number" class="form-control" id="limitmint" placeholder="Número máximo matriculados"
+                        value="80" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Fecha límite matricula</label>
+                    <input type="date" class="form-control" id="expirationtime" value="2020-12-31"
+                        placeholder="Fecha límite en la que se pueden matricular" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Precio (ECTS)</label>
+                    <input type="number" class="form-control" id="price" placeholder="Precio de la matrícula en ECTS"
+                        value="20" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Temario de la asignatura (Enlace)</label>
+                    <input type="text" class="form-control" id="descriptionURI"
+                        placeholder="Enlace al temario de la asignatura" required>
+                </div>
+                <div class="text-center"><button type="submit" class="btn btn-lg btn-primary" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Publicando asignatura">Enviar</button>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="loader"></div>
+    <script>
+        $().ready(function () { initWeb3(); getSmartContrats(); });
+        $('#registryform').submit(function () {
+            $('#loader').show();
+            publicarAsignatura()
+                .then(function (result) {
+                    if (result !== "") {
+                        console.log(`Registrada la asignatura ${document.getElementById("subjectname").value}, ${result}`);
+                    } else {
+                        console.error("ERROR REGISTRO ASIGNATURA: " + result);
+                    };
+                    $('#loader').hide();
+                    location.replace = "/universidades.html";
+                }
+                );
+            return false;
+        });
+    </script>
+</body>
+
+</html>

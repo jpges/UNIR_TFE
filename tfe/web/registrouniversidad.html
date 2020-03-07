@@ -43,14 +43,28 @@
                     <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
                 </div>
                 <div class="text-center">
-                    <button class="btn btn-lg btn-primary" id="ok" type="button">Enviar</button>
+                    <button type="submit" class="btn btn-lg btn-primary" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Ejecutando proceso">Enviar</button>
                 </div>
             </form>
         </div>
     </div>
     <script>
         $().ready(function () { initWeb3(); getSmartContrats(); });
-        $('#ok').click(async function () { await registrarUniversidad(); });
+        $('#registryform').submit(function () {
+            $('#loader').show();
+            registrarUniversidad()
+                .then(function (result) {
+                    if (result !== "") {
+                        console.log(`Se ha creado correctamente una cuenta para la universidad. Para acceder posteriormente será necesario recordar que la cuenta es ${result[0]} y el password ${result[1]}.`);
+                    } else {
+                        console.error("ERROR REGISTRO ASIGNATURA: " + result);
+                    };
+                    $('#loader').hide();
+                    location.replace = "/loginuniversidad.html";
+                }
+                );
+            return false;
+        });
     </script>
 </body>
 

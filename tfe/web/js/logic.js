@@ -1,6 +1,6 @@
 
 // Registrar una nueva universidad
-async function registrarUniversidad() {
+function registrarUniversidad() {
 	var name = document.getElementById("name").value;
 	var password = document.getElementById("password").value;
 	var accountUniversity;
@@ -18,9 +18,8 @@ async function registrarUniversidad() {
 	localStorage.setItem('accountUniversity', accountUniversity);
 
 	//Desbloqueamos la cuenta
-	try {
-		web3.personal.unlockAccount(accountUniversity, password, 0);
-	} catch { e => console.log(e) }
+	await web3.eth.personal.unlockAccount(accountUniversity, password)
+		.then(console.log('Cuenta desbloqueada!'));
 
 	//Desplegamos un nuevo SC de Universidad
 	let SCUniversity;
@@ -32,47 +31,89 @@ async function registrarUniversidad() {
 	localStorage.setItem('accountSCUniversity', accountSCUniversity);
 
 	//Llamamos a la plataforma para registrar la universidad
-	var tx = await SCPlataforma.methods.registerUniversity(accountUniversity, accountSCUniversity).send({
-		gas: 700000,
+	SCPlataforma.methods.registerUniversity(accountUniversity, accountSCUniversity).send({
+		gas: 3000000,
 		from: accountPlataforma
-	})
-	.then(function (result) {
-		console.log(result);
-			if (!error) {
-				var msg = `OK! Se ha creado correctamente la universidad ${name}`;
-				console.log(msg);
-				var ask = window.confirm(msg);
-				if (ask) {
-					window.location.href = "index.html";
-				}
-			} else {
-				console.log("Error" + error);
-			}
 	});
+		.on('receipt', function (receipt) {
+			console.log(`Registrada universidad ${name} con cuenta ${accountUniversity} y smartcontract asociado ${accountSCUniversity}`);
+			console.log(receipt);
+		})
+		.on('error', function (error, receipt) { // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+			console.log("ERROR CREANDO LA UNIVERSIDAD");
+			console.log("Error: " + error);
+		});
 
 	//Bloqueamos nuevamente la cuenta
-	web3.personal.lockAccount(accountUniversity, password);
+	web3.eth.personal.lockAccount(accountUniversity, password);
+
+	return [accountUniversity, password];
 }
 
-function loginEstudiante() {
-	location.replace("estudiantes.html");
-	var address = document.getElementById("inputAccount").value;
-	var pss = document.getElementById("inputPassword").value;
+function loginUniversidad() {
+	let inputAccount = document.getElementById("inputAccount").value;
+	let inputPassword = document.getElementById("inputPassword").value;
+
 	try {
-		web3.personal.unlockAccount(address, pss, 0);
-		var exist = plataforma.existeEmpleado.call(address, { from: accounts[0], gas: 30000 });
-		if (exist) {
-			localStorage.setItem("inputAccount", address);
-			location.replace("estudiantes.html");
+		web3.eth.personal.unlockAccount(inputAccount, inputPassword);
+
+		var accSC = await SCPlataforma.methods.getUniversity(inputAccount).call({
+			from: accountPlataforma,
+			gas: 30000
+		});
+
+		if (accSC != "") {
+			console.log(accSC);
+			localStorage.setItem("accountUniversity", inputAccount);
+			localStorage.setItem("accountSCUniversity", accSC);
+			return true;
 		} else {
-			alert("La cuenta de estudiante indicada no existe en el sistema");
-		}
+			localStorage.removeItem("accountUniversity");
+			localStorage.removeItem("accountSCUniversity");
+			return false;
+		};
 	} catch (error) {
-		alert("¡Contraseña incorrecta!");
+		localStorage.removeItem("accountUniversity");
+		localStorage.removeItem("accountSCUniversity");
+		console.log(error);
+		return false;
 	}
 }
 
-function encadenar() {
-	var consola = document.getElementById('consola').innerHTML;
-	document.getElementById('consola').innerHTML = consola.concat('ashkjdjl asdsad lkjlkasjd laksjda sdlkajsdlk jasldkja slkdjas dlkasjd laksdj');
+function getNameUniversidad() {
+	let accountUniversity = localStorage.getItem("accountUniversity");
+    let accountSCUniversity = localStorage.getItem("accountSCUniversity");
+	let SCUniversity = new web3.eth.Contract(ABI_University, accountSCUniversity);
+	var name = SCUniversity.methods.name().call({
+		from: accountUniversity,
+		gas: 30000
+	});
+	return name;
 }
+
+function publicarAsignatura(){
+	let accountUniversity = localStorage.getItem("accountUniversity");
+	let accountSCUniversity = localStorage.getItem("accountSCUniversity");
+
+	let subjectname = document.getElementById("subjectname").value;
+	let symbol = document.getElementById("symbol").value;
+	let limitmint = document.getElementById("limitmint").value;
+	let expirationtime = toTimestamp(document.getElementById("expirationtime").value);
+	let price = document.getElementById("price").value;
+	let descriptionURI = document.getElementById("descriptionURI").value;
+
+	let SCUniversity = new web3.eth.Contract(ABI_University, accountSCUniversity);
+
+	//Llamamos a la plataforma para registrar la universidad
+	var tx = SCUniversity.methods.createSubject(subjectname, symbol, limitmint,
+        expirationtime, price, descriptionURI).send({
+		gas: 3000000,
+		from: accountUniversity
+	});
+	return tx;	
+}
+
+function toTimestamp(strDate){
+	var datum = Date.parse(strDate);
+	return datum/1000;
+   }
