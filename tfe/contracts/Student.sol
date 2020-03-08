@@ -1,10 +1,9 @@
-pragma solidity ^0.6.1;
+pragma solidity ^0.5.0;
 
-import "./UniversityPlatform.sol";
 import "./University.sol";
 import "./SubjectToken.sol";
 import "./ECTSToken.sol";
-import "./openzeppelin/ownership/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/ownership/Ownable.sol";
 
 /**
  * @dev El SM Students se encarga de la gestión de los estudiantes.
@@ -31,8 +30,6 @@ contract Student is Ownable {
 
     // Objectos privados que apuntan a los SC relacionados
     ECTSToken private _token;
-    UniversityPlatform private _univPlatform;
-    
     
     /**
      * @dev Inicializa el contrato apuntando a los SC que se relacionan con este.

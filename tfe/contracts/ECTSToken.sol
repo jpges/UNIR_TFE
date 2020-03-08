@@ -1,8 +1,8 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.0;
 
-import "./openzeppelin/token/ERC20/ERC20Detailed.sol";
-import "./openzeppelin/token/ERC20/ERC20.sol";
-import "./openzeppelin/ownership/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "../node_modules/@openzeppelin/contracts/ownership/Ownable.sol";
 
 contract ECTSToken is ERC20Detailed, ERC20, Ownable {
     
@@ -19,7 +19,7 @@ contract ECTSToken is ERC20Detailed, ERC20, Ownable {
      * - `account` no puede ser la cuenta 0.
      * - Solo puede llamar a este método el propietario del SM.
      */
-    function mint(address beneficiary, uint256 amount) public onlyOwner virtual {
+    function mint(address beneficiary, uint256 amount) public onlyOwner {
         _mint(beneficiary, amount);
     }
 }

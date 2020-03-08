@@ -1,14 +1,16 @@
-function install() { 
-    //Desplegamos el ECTSToken
-    return deployContract('ECTSToken', accountPlataforma, ABI_ECTSToken, DATA_ECTSToken).then(v => {
-        accountSCECTSToken = v._address;
-        localStorage.setItem('accountSCECTSToken', accountSCECTSToken);
-        //Desplegamos el UniversityPlatform
-        return deployContract('UniversityPlatform',accountPlataforma, ABI_UniversityPlatform,
-        DATA_UniversityPlatform, [accountSCECTSToken]).then(z => {
+function install() {
+    //Desplegamos el UniversityPlatform
+    return deployContract('UniversityPlatform', accountPlataforma, ABI_UniversityPlatform,
+        DATA_UniversityPlatform).then(z => {
             accountSCPlataforma = z._address;
-            localStorage.setItem('accountSCPlataforma', accountSCPlataforma);
+            z.methods.getECTSTokenAddress().call({
+                from: accountPlataforma,
+                gas: 30000
+            }).then(v => {
+                localStorage.setItem('accountSCPlataforma', accountSCPlataforma);
+                localStorage.setItem('accountSCECTSToken', v);
+                return true;
+            });
             return true;
         });
-    });        
 }

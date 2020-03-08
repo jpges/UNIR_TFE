@@ -1,7 +1,7 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.0;
 
 import "./ECTSToken.sol";
-import "./openzeppelin/ownership/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/ownership/Ownable.sol";
 
 /**
  * @dev El smart contract UniversityPlatform representa la administración general de todo el sistema.
@@ -41,9 +41,13 @@ contract UniversityPlatform is Ownable{
      * @dev Inicializa el contrato desplegando el token ECTSToken.
      * También establece el precio inicial que queremos poner a los ECTS, pero posteriormente se puede cambiar manualmente.
      */
-    constructor(address scAddressToken) public {
-        _token = ECTSToken(scAddressToken);
+    constructor() public {
+        _token = new ECTSToken(); //Creamos el nuevo token que vamos a intercambiar
         _priceOfOneTokenInWei=((76/100) * 10**18); //Inicialmente establezco el valor en 0,76 ETHER que son unos 150€
+    }
+    
+    function getECTSTokenAddress() public view onlyOwner returns (address){
+        return address(_token);
     }
     
     /**
@@ -73,7 +77,7 @@ contract UniversityPlatform is Ownable{
     /**
      * @dev Cuando se llama al contract sin método y con ether se ejecutará este método.
      */
-    receive() external payable {
+    function() external payable {
         buyTokens(msg.sender);
     }
     

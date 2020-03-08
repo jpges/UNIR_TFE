@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.0;
 
 /**
  * @dev Contrato que añade un modificador que nos permite autorizar el uso de

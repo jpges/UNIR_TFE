@@ -1,0 +1,17 @@
+{
+  "name": "tfe",
+  "version": "1.0.0",
+  "description": "Proyecto final de experto TFE",
+  "main": "./web/js/install.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "José Pastor",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^2.5.0"
+  }
+}

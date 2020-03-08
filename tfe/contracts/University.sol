@@ -1,9 +1,9 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.0;
 
 import "./SubjectToken.sol";
 import "./ECTSToken.sol";
-import "./openzeppelin/ownership/Ownable.sol";
-import "./openzeppelin/math/SafeMath.sol";
+import "../node_modules/@openzeppelin/contracts/ownership/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/math/SafeMath.sol";
 
 /**
  * @dev El smart contract University representa una universidad dentro de la plataforma.

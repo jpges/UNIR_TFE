@@ -1,7 +1,7 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.0;
 
-import "./openzeppelin/token/ERC721/ERC721Metadata.sol";
-import "./openzeppelin/ownership/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721Metadata.sol";
+import "../node_modules/@openzeppelin/contracts/ownership/Ownable.sol";
 import "./Limitable.sol";
 import "./Expirable.sol";
 
@@ -117,7 +117,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param to address to receive the ownership of the given token ID
      * @param tokenId uint256 ID of the token to be transferred
      */
-    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
+    function transferFrom(address from, address to, uint256 tokenId) public {
         require((from == owner()) || (to == owner()), "SubjectToken: student only can transfer to university");
         super.transferFrom(from, to, tokenId);
     }
@@ -134,7 +134,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param to address to receive the ownership of the given token ID
      * @param tokenId uint256 ID of the token to be transferred
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public {
         require((from == owner()) || (to == owner()), "SubjectToken: student only can transfer to university");
         super.safeTransferFrom(from, to, tokenId);
     }
@@ -152,7 +152,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param tokenId uint256 ID of the token to be transferred
      * @param _data bytes data to send along with a safe transfer check
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public {
         require((from == owner()) || (to == owner()), "SubjectToken: student only can transfer to university");
         super.safeTransferFrom(from, to, tokenId, _data);
     }
@@ -164,7 +164,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param operator operator address to set the approval
      * @param approved representing the status of the approval to be set
      */
-    function setApprovalForAll(address operator, bool approved) public virtual override {
+    function setApprovalForAll(address operator, bool approved) public {
         require(operator == owner(), "SubjectToken: student only can approve to university");
         super.setApprovalForAll(operator, approved);
     }
@@ -178,7 +178,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param to address to be approved for the given token ID
      * @param tokenId uint256 ID of the token to be approved
      */
-    function approve(address to, uint256 tokenId) public virtual override {
+    function approve(address to, uint256 tokenId) public {
         require(to == owner(), "SubjectToken: student only can approve to university");
         super.approve(to, tokenId);
     }
