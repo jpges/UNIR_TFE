@@ -313,13 +313,13 @@ function getListUniversities() {
 	}).then(function (universities) {
 		let promises = [];
 		universities.forEach(univ => {
-			promises.push(getUniversity(univ));
+			promises.push(getUniversityStudent(univ));
 		});
 		return Promise.all(promises);
 	});
 }
 
-function getUniversity(univ) {
+function getUniversityStudent(univ) {
 	let accountStudent = localStorage.getItem("accountStudent");
 	return SCPlataforma.methods.getUniversity(univ).call({
 		from: accountStudent,
