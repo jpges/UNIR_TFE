@@ -2,7 +2,6 @@ function install() {
     //Desplegamos el UniversityPlatform
     return deployContract('UniversityPlatform', accountPlataforma, ABI_UniversityPlatform,
         DATA_UniversityPlatform).then(z => {
-            console.log(z._address);
             accountSCPlataforma = z._address;
             return z.methods.getECTSTokenAddress().call({
                 from: accountPlataforma,

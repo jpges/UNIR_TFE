@@ -92,11 +92,10 @@ function getNameUniversidad() {
 
 function getNameSCUniversidad(caller, addressSCUniv) {
 	let SCUniversity = new web3.eth.Contract(ABI_University, addressSCUniv);
-	var name = SCUniversity.methods.name().call({
+	return SCUniversity.methods.name().call({
 		from: caller,
 		gas: 30000
 	});
-	return name;
 }
 
 function getTablaAsignaturas() {
@@ -163,11 +162,12 @@ function getDeposito(owner) {
 	let accountUniversity = localStorage.getItem("accountUniversity");
 	let accountSCUniversity = localStorage.getItem("accountSCUniversity");
 	let SCUniversity = new web3.eth.Contract(ABI_University, accountSCUniversity);
-	var result = SCUniversity.methods.getDeposit(owner).call({
+	return SCUniversity.methods.getDeposit(owner).call({
 		from: accountUniversity,
 		gas: 30000
-	})
-	return result;
+	}).then(v => {
+		return [owner, v[0], v[1]];
+	});
 }
 
 function publicarAsignatura() {
@@ -364,11 +364,34 @@ function getTablaDepositosPropios() {
 	let accountStudent = localStorage.getItem("accountStudent");
 	let accountSCStudent = localStorage.getItem("accountSCStudent");
 	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
-	var result = SCStudent.methods.getUniversitiesWithDeposit().call({
+	return SCStudent.methods.getUniversitiesWithDeposit().call({
+		from: accountStudent,
+		gas: 30000
+	}).then(function (accountSCUnivs) {
+		let promises = [];
+		accountSCUnivs.forEach(accountSC => {
+			promises.push(getDepositosPropio(accountStudent, accountSC));
+		});
+		return Promise.all(promises);
+	});
+}
+
+function getDepositosPropio(accountStudent, accountSC){
+	let promises = [];
+	promises.push(accountSC);
+	promises.push(getNameSCUniversidad(accountStudent, accountSC));
+	promises.push(getDepositInUniversity(accountSC));
+	return Promise.all(promises);
+}
+
+function getDepositInUniversity(scuniv) {
+	let accountStudent = localStorage.getItem("accountStudent");
+	let accountSCStudent = localStorage.getItem("accountSCStudent");
+	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
+	return SCStudent.methods.getDepositInUniversity(scuniv).call({
 		from: accountStudent,
 		gas: 30000
 	});
-	return result;
 }
 
 function closeStudentSession() {
@@ -378,17 +401,6 @@ function closeStudentSession() {
 	localStorage.removeItem("accountSCStudent");
 	localStorage.removeItem('accountStudent');
 	localStorage.removeItem('pps');
-}
-
-function getTablaDepositosPropios() {
-	let accountStudent = localStorage.getItem("accountStudent");
-	let accountSCStudent = localStorage.getItem("accountSCStudent");
-	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
-	var result = SCStudent.methods.getUniversitiesWithDeposit().call({
-		from: accountStudent,
-		gas: 30000
-	});
-	return result;
 }
 
 function buyECTSTokens() {
@@ -415,6 +427,35 @@ function buyECTSTokens() {
 		console.error("ERROR COMPRANDO TOKENS");
 		console.error(error);
 		return false;
+	}).then(v => {
+		console.log("Ejecutada compra de tokens.");
+		console.log(v);
+	});;
+}
+
+
+function depositarECTSTokens(studentname) {
+	let cantidadECTS = document.getElementById("cantidad").value;
+	let accountSCUniv = document.getElementById("universidad").value;
+	let accountStudent = localStorage.getItem("accountStudent");
+	let accountSCStudent = localStorage.getItem("accountSCStudent");
+	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
+
+	return SCECTSToken.methods.approve(accountSCUniv,cantidadECTS).send({
+		gas: 5000000,
+		from: accountStudent
+	}).on('receipt', function (receipt) {
+		return SCStudent.methods.addDeposit(studentname,accountSCUniv,cantidadECTS).send({
+		gas: 5000000,
+		from: accountStudent
+		}).then(v => {
+			console.log("Ejecutada transferencia de deposito.");
+			console.log(v);
+		});
+	}).on('error', function (error, receipt) { // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+		console.error("ERROR TRANSFIRIENDO ECTS (SCECTSToken.methods.approve)");
+		console.error(error);
+		return false;
 	});
 }
 
@@ -434,7 +475,7 @@ function addContentTable(tablename, arraytable) {
 		table.insertRow();
 		for (let cell of row) {
 			let newCell = table.rows[table.rows.length - 1].insertCell();
-			newCell.textContent = cell;
+			newCell.innerHTML = cell;
 		}
 	}
 }
@@ -447,4 +488,10 @@ function addContentSelect(selectname, array) {
 		opt.value = row[0];
 		sel.appendChild(opt);
 	}
+}
+
+$.urlParam = function (name) {
+	var results = new RegExp('[\?&]' + name + '=([^&#]*)')
+		.exec(window.location.search);
+	return (results !== null) ? results[1] || 0 : false;
 }

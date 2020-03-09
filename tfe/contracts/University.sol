@@ -17,6 +17,7 @@ contract University is Ownable{
         address accountstudent;
         string studentname;
         uint256 balance;
+        bool exists;
     }
 
     //Campos de información privados
@@ -27,7 +28,7 @@ contract University is Ownable{
     
     //Events
     event PublishNewSubject(string subjectname, address accountSCSubject);
-    event DepositRegistred(address _from, address _to, uint256 _amount);
+    event UniversityDepositRegistred(address _from, address _to, uint256 _amount);
     event EnrolledInSubject(address _to, address subject, uint256 tokenId);
     
     /**
@@ -123,18 +124,24 @@ contract University is Ownable{
     * Se emite un evento {DepositRegistred}
     * @param amountTokens Cantidad de tokens que se quieren depositar
     */
-    function makeAnIncome(string memory studentname, uint amountTokens) public{
-        // Añade los tokens indicados en el depósito del alumno
-        _universityStudentBalances[_msgSender()].accountstudent = _msgSender();
-        _universityStudentBalances[_msgSender()].studentname = studentname;
-        _universityStudentBalances[_msgSender()].balance = (_universityStudentBalances[_msgSender()].balance).add(amountTokens);
-        _deposits.push(_msgSender());
-
+    function makeAnIncome(address student, string memory studentname, uint amountTokens) public returns (bool){
         // Transfiere los tokens propiedad del alumno de su cuenta a la de esta universidad.
         // Antes de llamar a este método el alumno deberá haber aprobado la cuenta de esta universidad para la cantidad de tokens que quiere transferir
         ECTSToken _token = ECTSToken(_addrtoken);
-        _token.transferFrom(_msgSender(), owner(), amountTokens);
-        emit DepositRegistred(_msgSender(), owner(), amountTokens);
+        _token.transferFrom(student, address(this), amountTokens);
+        
+        if (!_universityStudentBalances[student].exists){
+            _deposits.push(student);        
+        }
+        
+        // Añade los tokens indicados en el depósito del alumno
+        _universityStudentBalances[student].exists = true;
+        _universityStudentBalances[student].accountstudent =student;
+        _universityStudentBalances[student].studentname = studentname;
+        _universityStudentBalances[student].balance = (_universityStudentBalances[student].balance).add(amountTokens);
+
+        emit UniversityDepositRegistred(student, address(this), amountTokens);
+        return true;
     }
     
     /*
@@ -147,7 +154,13 @@ contract University is Ownable{
         require(isPublisedSubject(accountSubject), "University: accountSubject not found.");
         SubjectToken sub = SubjectToken(accountSubject);
         require(enoughDeposit(_msgSender(), sub.price()), "University: Not enough tokens in deposit.");
+        
+        //Le mintamos un nuevo token
         uint256 tokenId = sub.mint(_msgSender());
+        
+        //Le restamos los ECTS del deposito
+        _universityStudentBalances[_msgSender()].balance = (_universityStudentBalances[_msgSender()].balance).sub(sub.price());
+        
         emit EnrolledInSubject(_msgSender(), accountSubject, tokenId);
         return tokenId;
     }

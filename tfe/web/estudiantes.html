@@ -25,6 +25,7 @@
     <script src="./js/logic.js"></script>
     <script>
         var etcss = 0;
+        var studentname = "";
     </script>
 </head>
 
@@ -62,14 +63,16 @@
         </div>
 
         <div class="my-2 card">
-            <div class="card-header">Lista de depósitos<a class="btn btn-primary text-light float-right" id="comprarECTS">Comprar ECTS</a><a class="btn btn-primary text-light float-right  mx-2" id="nuevodeposito">Transferir nuevo depósito</a></div>
+            <div class="card-header">Lista de depósitos<a class="btn btn-primary text-light float-right"
+                    id="comprarECTS">Comprar ECTS</a><a class="btn btn-primary text-light float-right  mx-2"
+                    id="nuevodeposito">Transferir nuevo depósito</a></div>
             <div class="card-body">
                 <table class="table" id="tabladepositos">
                     <thead>
                         <tr>
-                            <th>Firstname</th>
-                            <th>Lastname</th>
-                            <th></th>
+                            <th>Cuenta universidad</th>
+                            <th class="col-sm-6">Nombre</th>
+                            <th>Deposito&nbsp;(ECTS)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,7 +90,8 @@
             getSmartContrats();
             getNameEstudiante()
                 .then(function (result) {
-                    document.getElementById("name").innerText = result;
+                    studentname = result;
+                    document.getElementById("name").innerText = studentname;
                 });
             getBalanceOfECTS()
                 .then(function (result) {
@@ -101,9 +105,12 @@
                 });
             getTablaDepositosPropios()
                 .then(function (result) {
-                    if (result!="0x0000000000000000000000000000000000000000"){
-                        addContentTable("tabladepositos", result);
+                    let tablearray = new Array;
+                    for (let row of result) {
+                        var fila = [row[0],row[1],row[2],`<a class="btn btn-primary text-light float-right" href="matricular.html?univ=${row[0]}"/>Asignaturas</a>`];
+                        tablearray.push(fila);
                     }
+                    addContentTable("tabladepositos", tablearray);
                 });
         });
         $('#cerrar').click(function () {
@@ -114,9 +121,8 @@
             document.location = "/comprarects.html";
         });
         $('#nuevodeposito').click(function () {
-            document.location = "/transferirects.html";
+            document.location = `/transferirects.html?name=${studentname}`;
         });
     </script>
 </body>
-
 </html>

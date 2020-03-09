@@ -18,6 +18,9 @@ contract Student is Ownable {
         bool exists;
     }
     
+    //Events
+    event StudentDepositRegistred(address _from, address _to, uint256 _amount);
+    
     //Estructura para guardar matriculas
     struct Enrollement{
         uint256 tokenid;
@@ -76,38 +79,29 @@ contract Student is Ownable {
     }
 
     /*
-    * @dev Se depositan tokens ECTSToken en un deposito particular de este alumno en la universidad que se indica
+    * @dev Registra el depósito realizado y llama a la universidad para que se adueñe de los tokens
     * Se restringe el método únicamente a la cuenta del estudiante propietario de esta instancia del contract
     * @param accountSCUniversity Cuenta del smartcontract de la universidad a la que queremos transferir los tokens
     * @param amountTokens Cantidad de tokens que se quieren depositar
     */
-    function makeAnIncome(address accountSCUniversity, uint amountTokens) public onlyOwner returns (bool){
-        // Marcamos la cuenta de la universidad como aprobada para transferir la cantidad de tokens indicada
-        _token.approve(accountSCUniversity, amountTokens);
-        
+    function addDeposit(string memory studentname, address accountSCUniversity, uint amountTokens) public onlyOwner returns (bool){
         // Reconstruimos el enlace con la universidad y le decimos que se transfiera ahora los tokens
         University univ = University(accountSCUniversity);
-        univ.makeAnIncome(_name, amountTokens);
-        
-        // Guarda en el registro de depositos la información
-        require(addDeposit(accountSCUniversity,amountTokens));
-        
-        return true;
-    }
-    
-    /*
-    * @dev Función privada que añade una estructura deposito si no existe ya
-    * @param accountUniversity Cuenta de la universidad a la que queremos transferir los tokens
-    * @param amountTokens Cantidad de tokens que se quieren depositar
-    */
-    function addDeposit(address accountSCUniversity, uint amountTokens) private returns (bool){
-        if (!_universityDepositBalance[accountSCUniversity].exists){
-            _universitiesWithDeposit[_totalDeposits] = accountSCUniversity;
-            _totalDeposits++;
+        if (univ.makeAnIncome(owner(), studentname, amountTokens)){
+            //Añadimos el deposito
+            if (!_universityDepositBalance[accountSCUniversity].exists){
+                _universityDepositBalance[accountSCUniversity].balance = 0;
+                _universitiesWithDeposit[_totalDeposits] = accountSCUniversity;
+                _totalDeposits++;
+            }
+            _universityDepositBalance[accountSCUniversity].exists = true;
+            _universityDepositBalance[accountSCUniversity].balance = (_universityDepositBalance[accountSCUniversity].balance).add(amountTokens);
+            
+            emit StudentDepositRegistred(owner(), accountSCUniversity, amountTokens);
+            return true;
+        }else{
+            return false;
         }
-        _universityDepositBalance[accountSCUniversity].exists = true;
-        _universityDepositBalance[accountSCUniversity].balance += amountTokens; 
-        return true;
     } 
     
     /*
@@ -115,8 +109,8 @@ contract Student is Ownable {
     * Las llamadas únicamente las puede realizar el propietario de esta cuenta de estudiante
     */
     function getUniversitiesWithDeposit() public view onlyOwner returns (address[] memory){
-        address[] memory _univs = new address[](_totalDeposits + 1);
-        for(uint i = 0 ; i<=_totalDeposits; i++) {
+        address[] memory _univs = new address[](_totalDeposits);
+        for(uint i = 0 ; i<_totalDeposits; i++) {
             _univs[i] = _universitiesWithDeposit[i];
         }
         return _univs;

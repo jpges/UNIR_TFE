@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>ESUMP - Panel Control Universidades</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- JS Script libraries de terceros -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
+
+    <!-- Estilos y js propios de nuestra aplicación -->
+    <link href="tfe.css" rel="stylesheet">
+    <script src="config.js"></script>
+    <script src="./js/contracts.js"></script>
+    <script src="./js/accounts.js"></script>
+    <script src="./js/logic.js"></script>
+    <script>
+        var univSC = $.urlParam("univ"); 
+    </script>
+</head>
+
+<body style="padding-top: 10px;">
+    <div class="container">
+        <div class="my-2 card" style="width: 70rem;">
+            <div class="card-body">
+                <h5 class="card-title float-left" id="depositoECTS">Deposito en <spam id="universidad1"></spam>: <spam
+                        class="text-danger" id="ectss"></spam> ECTS.</h5>
+            </div>
+        </div>
+
+        <div class="my-2 card">
+            <div class="card-header">
+                Asignaturas ofrecidas por <spam id="universidad2"></spam>.
+                <div class="card-body">
+                    <table class="table" id="tablaasignaturas">
+                        <thead>
+                            <tr>
+                                <th class="col-sm-4">Cuenta despliegue</th>
+                                <th class="col-sm-4">Asignatura</th>
+                                <th class="col-sm-1">Símbolo</th>
+                                <th class="col-sm-1">ECTS</th>
+                                <th class="col-sm-2">Temario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="button" class="btn btn-lg btn-primary" id="salir">Salir</button>
+        </div>
+        <div id="loader"></div>
+        <script type='text/javascript'>
+            $().ready(function () {
+                $('#loader').show();
+                initWeb3();
+                getSmartContrats();
+                getDepositosPropio(localStorage.getItem("accountStudent"), univSC)
+                    .then(function (result) {
+                        document.getElementById("universidad1").innerText = result[1];
+                        document.getElementById("universidad2").innerText = result[1];
+                        document.getElementById("ectss").innerText = result[2];
+                    });
+                /*getTablaAsignaturas()
+                    .then(function (result) {
+                        addContentTable("tablaasignaturas", result);
+                        
+                    });            */
+                $('#loader').hide();
+            });
+            $('#publicar').click(function () {
+                document.location = "/registroasignatura.html";
+            });
+            $('#salir').click(function () {
+                document.location = "/estudiantes.html";
+            });
+
+
+        </script>
+</body>
+
+</html>
