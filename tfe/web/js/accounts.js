@@ -4,6 +4,13 @@ var accountPlataforma = null;
 var SCPlataforma;
 var SMECTSToken;
 
+const GANACHE_PROVIDER = "http://localhost:7545";
+const ALASTRIA_PROVIDER = "http://138.4.143.82:8545";
+const TESTNET_PROVIDER = "http://localhost:22001";
+const TESTNET = "testnet";
+const GANACHE = "ganache";
+const ALASTRIA = "alastria";
+
 if (localStorage.getItem('indexAccount') === null) {
     localStorage.setItem('indexAccount', 1); // Control de cuentas utilizadas. La cuenta 0 siempre la utiliza la plataforma, por eso marcamos el indice a 1 inicialmente
 }
@@ -16,8 +23,8 @@ async function initWeb3() {
 
 async function settingAccounts() {
     switch (environment) {
-        case 'testnet':
-            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:22001"));
+        case TESTNET:
+            web3 = new Web3(new Web3.providers.HttpProvider(TESTNET_PROVIDER));
             try {
                 accounts = await web3.eth.getAccounts();
             }
@@ -25,8 +32,8 @@ async function settingAccounts() {
                 die(error, "La TestNet no responde en http://localhost:22001, por favor, comprueba que se encuentra en ejecución.");
             }
             break;
-        case 'alastria':
-            web3 = new Web3(new Web3.providers.HttpProvider("http://138.4.143.82:8545"));
+        case ALASTRIA:
+            web3 = new Web3(new Web3.providers.HttpProvider(ALASTRIA_PROVIDER));
             accounts = [
                 "0x994319e1b1de09aac4aa5b225a7d5cade79d04ed",
                 "0x66c5a820d0e743fc7030f02aa873875c84a88f3f",
@@ -41,7 +48,7 @@ async function settingAccounts() {
             ];
             break;
         default: //En este caso tirará de Ganache
-            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+            web3 = new Web3(new Web3.providers.HttpProvider(GANACHE_PROVIDER));
             try {
                 accounts = await web3.eth.getAccounts();
             }
@@ -70,10 +77,10 @@ function die(error, errorMessage) {
 
 async function unlockPlatformAccount() {
     switch (environment) {
-        case 'testnet':
+        case TESTNET:
             web3.personal.unlockAccount(accountPlataforma, "Passw0rd");
             break;
-        case 'alastria':
+        case ALASTRIA:
             web3.eth.personal.unlockAccount(accountPlataforma, "Alumnos_2018_Q4_IKx5srvT");
             break;
         default: //En este caso tirará de Ganache
@@ -83,37 +90,11 @@ async function unlockPlatformAccount() {
     console.log("Desbloqueada cuenta de la plataforma: " + accountPlataforma);
 }
 
-/* async function asyncDeployContract(scname, account, abi, data, _arguments) {
-    let newContractInstance;
-    var Contract = new web3.eth.Contract(abi)
-    var tx = await Contract.deploy({
-        data: data,
-        arguments: _arguments
-    }).send({
-        gas: 6000000,
-        from: account
-    }, function (error, transactionHash) {
-        if (error) console.log(error);
-    })
-        .on('error', function (error, receipt) {
-            console.log(`ERROR DESPLEGANDO CONTRATO ${scname}`);
-            console.log("Error: " + error);
-        })
-        .on('receipt', function (receipt) {
-            console.debug(receipt);
-        })
-        .then(function (_newContractInstance) {
-            newContractInstance = _newContractInstance;
-            console.log(`Nueva instancia contrato ${scname}: ${newContractInstance._address}`);
-        });
-    return newContractInstance;
-} */
-
 async function asyncDeployContract(scname, account, abi, data, _arguments) {
     const result = await deployContract(scname, account, abi, data, _arguments);
     console.log(result);
     return result;
-  }
+}
 
 function deployContract(scname, account, abi, data, _arguments) {
     let newContractInstance;
@@ -124,7 +105,7 @@ function deployContract(scname, account, abi, data, _arguments) {
             data: data,
             arguments: _arguments
         }).send({
-            gas: 6000000,
+            gas: 6700000,
             from: account
         }, function (error, transactionHash) {
             if (error) console.log(error);
@@ -154,3 +135,13 @@ function getSmartContrats() {
     SCPlataforma = new web3.eth.Contract(ABI_UniversityPlatform, accountSCPlataforma);
     SCECTSToken = new web3.eth.Contract(ABI_ECTSToken, accountSCECTSToken);
 }
+
+function getBalanceOfMilliEther(address) {
+    let balance = web3.eth.getBalance(address).then(v => {
+        return web3.utils.fromWei(v, "milliether");
+    }).then(z => {
+        return z;
+    }); //Will give value in.
+    return balance;
+}
+

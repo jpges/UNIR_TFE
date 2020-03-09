@@ -87,9 +87,13 @@ function loginUniversidad() {
 function getNameUniversidad() {
 	let accountUniversity = localStorage.getItem("accountUniversity");
 	let accountSCUniversity = localStorage.getItem("accountSCUniversity");
-	let SCUniversity = new web3.eth.Contract(ABI_University, accountSCUniversity);
+	return getNameSCUniversidad(accountUniversity, accountSCUniversity);
+}
+
+function getNameSCUniversidad(caller, addressSCUniv) {
+	let SCUniversity = new web3.eth.Contract(ABI_University, addressSCUniv);
 	var name = SCUniversity.methods.name().call({
-		from: accountUniversity,
+		from: caller,
 		gas: 30000
 	});
 	return name;
@@ -182,7 +186,7 @@ function publicarAsignatura() {
 	//Llamamos a la plataforma para registrar la universidad
 	var tx = SCUniversity.methods.createSubject(subjectname, symbol, limitmint,
 		expirationtime, price, descriptionURI).send({
-			gas: 3000000,
+			gas: 6000000,
 			from: accountUniversity
 		});
 	return tx;
@@ -293,6 +297,40 @@ function getNameEstudiante() {
 	return name;
 }
 
+function getBalanceOfECTS() {
+	let accountStudent = localStorage.getItem("accountStudent");
+	return SCECTSToken.methods.balanceOf(accountStudent).call({
+		from: accountStudent,
+		gas: 30000
+	});
+}
+
+function getListUniversities() {
+	let accountStudent = localStorage.getItem("accountStudent");
+	return SCPlataforma.methods.getUniversities().call({
+		from: accountStudent,
+		gas: 30000
+	}).then(function (universities) {
+		let promises = [];
+		universities.forEach(univ => {
+			promises.push(getUniversity(univ));
+		});
+		return Promise.all(promises);
+	});
+}
+
+function getUniversity(univ) {
+	let accountStudent = localStorage.getItem("accountStudent");
+	return SCPlataforma.methods.getUniversity(univ).call({
+		from: accountStudent,
+		gas: 30000
+	}).then(function (addressSC) {
+		return getNameSCUniversidad(accountStudent, addressSC).then(v => {
+			return [addressSC, v];
+		});
+	});
+}
+
 function getTablaMatriculas() {
 	let accountStudent = localStorage.getItem("accountStudent");
 	let accountSCStudent = localStorage.getItem("accountSCStudent");
@@ -322,7 +360,7 @@ function getIdToken(subjectaccount) {
 	return result;
 }
 
-function getTablaDepositosPropios(){
+function getTablaDepositosPropios() {
 	let accountStudent = localStorage.getItem("accountStudent");
 	let accountSCStudent = localStorage.getItem("accountSCStudent");
 	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
@@ -342,7 +380,7 @@ function closeStudentSession() {
 	localStorage.removeItem('pps');
 }
 
-function getTablaDepositosPropios(){
+function getTablaDepositosPropios() {
 	let accountStudent = localStorage.getItem("accountStudent");
 	let accountSCStudent = localStorage.getItem("accountSCStudent");
 	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
@@ -354,13 +392,22 @@ function getTablaDepositosPropios(){
 }
 
 function buyECTSTokens() {
-	let cantidad = document.getElementById("cantidad").value;
+	let cantidadECTS = document.getElementById("cantidad").value;
 	let accountStudent = localStorage.getItem("accountStudent");
+	/*
+	TODO: Aquí hemos supuesto que el precio del ECTS es fijo a 760 miliEthers
+	Lo correcto sería preguntarle el precio a la plataforma de la universidad que es la que lo fija, pero por
+	falta de tiempo y el caracter académico de este trabajo lo dejo así.
+	*/
+	//Calculamos el precio exacto para que no haya devoluciones
+	let cantidad = cantidadECTS * 760;
+	let toWei = web3.utils.toWei(cantidad.toString(), "milliether");
 
+	console.log("Vamos a comprar (miliether): " + toWei);
 	return SCPlataforma.methods.buyTokens(accountStudent).send({
 		gas: 5000000,
-		from: accountPlataforma,
-		value: web3.utils.toWei( cantidad, 'ether')
+		from: accountStudent,
+		value: toWei
 	}).on('receipt', function (receipt) {
 		console.log(receipt);
 		return true
@@ -389,5 +436,15 @@ function addContentTable(tablename, arraytable) {
 			let newCell = table.rows[table.rows.length - 1].insertCell();
 			newCell.textContent = cell;
 		}
+	}
+}
+
+function addContentSelect(selectname, array) {
+	var sel = document.getElementById(selectname);
+	for (let row of array) {
+		var opt = document.createElement('option');
+		opt.appendChild(document.createTextNode(row[1]));
+		opt.value = row[0];
+		sel.appendChild(opt);
 	}
 }

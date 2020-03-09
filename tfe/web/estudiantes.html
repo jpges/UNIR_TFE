@@ -23,6 +23,9 @@
     <script src="./js/contracts.js"></script>
     <script src="./js/accounts.js"></script>
     <script src="./js/logic.js"></script>
+    <script>
+        var etcss = 0;
+    </script>
 </head>
 
 <body style="padding-top: 10px;">
@@ -33,7 +36,14 @@
                     class="btn btn-danger float-right" id="cerrar">Cerrar Sesión</button>
             </div>
         </div>
-
+        <div class="row my-5">
+            <div class="col-sm-6">
+                <h3>Tienes <spam class="text-danger" id="ectss"></spam> tokens ECTS</h3>
+            </div>
+            <div class="col-sm-6 text-right">
+                <h5>(1 ECTS = 760 miliether)</h5>
+            </div>
+        </div>
         <div class="my-2 card">
             <div class="card-header">Lista de matrículas</div>
             <div class="card-body">
@@ -79,6 +89,11 @@
                 .then(function (result) {
                     document.getElementById("name").innerText = result;
                 });
+            getBalanceOfECTS()
+                .then(function (result) {
+                    ectss = result;
+                    document.getElementById("ectss").innerText = ectss;
+                });
             getTablaMatriculas()
                 .then(function (result) {
                     addContentTable("tablamatriculas", result);
@@ -97,6 +112,9 @@
         });
         $('#comprarECTS').click(function () {
             document.location = "/comprarects.html";
+        });
+        $('#nuevodeposito').click(function () {
+            document.location = "/transferirects.html";
         });
     </script>
 </body>

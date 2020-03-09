@@ -5,7 +5,7 @@ function install() {
             accountSCPlataforma = z._address;
             z.methods.getECTSTokenAddress().call({
                 from: accountPlataforma,
-                gas: 30000
+                gas: 300000
             }).then(v => {
                 localStorage.setItem('accountSCPlataforma', accountSCPlataforma);
                 localStorage.setItem('accountSCECTSToken', v);

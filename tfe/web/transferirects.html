@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <title>ESUMP - Comprar ECTS</title>
+    <title>ESUMP - Depositos ECTS</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -28,11 +28,11 @@
 <body class="bg-light">
     <div class="container">
         <div class="py-5 text-center">
-            <h2>Comprar ECTS</h2>
+            <h2>Transferir deposito ECTS</h2>
         </div>
         <div class="row my-5">
             <div class="col-sm-6">
-                <h3>Tienes <spam class="text-danger" id="ethers"></spam> miliether</h3>
+                <h3>Tienes <spam class="text-danger" id="ectss"></spam> tokens ECTS</h3>
             </div>
             <div class="col-sm-6 text-right">
                 <h5>(1 ECTS = 760 miliether)</h5>
@@ -41,11 +41,15 @@
         <div class="w-50 mx-auto">
             <form id="registryform">
                 <div class="form-group">
-                    <label for="cantidad">¿Cuantos ECTSToken quieres comprar?</label>
-                    <input type="number" class="form-control" id="cantidad" placeholder="Indique la cantidad" value=1 required>
+                    <label for="universidad" class="lb-lg mr-3">Universidades</label>
+                    <select class="form-group form-control-lg" id="universidad"></select>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad">¿Cuantos tokens ECTS quieres transferir?</label>
+                    <input type="number" class="form-control" id="cantidad" placeholder="Indique la cantidad" required>
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-lg btn-primary">Comprar</button>
+                    <button type="submit" class="btn btn-lg btn-primary">Transferir</button>
                     <button type="button" class="btn btn-lg btn-primary" id="salir">Salir</button>
                 </div>
             </form>
@@ -56,10 +60,15 @@
         $().ready(function () {
             initWeb3();
             getSmartContrats();
-            let accountStudent = localStorage.getItem("accountStudent");
-            getBalanceOfMilliEther(accountStudent).then(v => {
-                document.getElementById("ethers").innerHTML = v;
-            });
+            getBalanceOfECTS()
+                .then(function (result) {
+                    ectss = result;
+                    document.getElementById("ectss").innerText = ectss;
+                });
+            getListUniversities()
+                .then(function (result) {
+                    addContentSelect("universidad", result)
+                });
         });
         $('#registryform').submit(function () {
             $('#loader').show();

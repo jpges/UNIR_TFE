@@ -136,10 +136,11 @@ contract UniversityPlatform is Ownable{
         uint256 amounttokens = msg.value.div(_priceOfOneTokenInWei);
         _weiRaised = _weiRaised.add(msg.value);
     
-        _token.mint(owner(), amounttokens); //Generamos los tokens a medida que los vamos necesitando
+        _token.mint(address(this), amounttokens); //Generamos los tokens a medida que los vamos necesitando
         _token.transfer(beneficiary, amounttokens);
         emit BuyTokens(amounttokens, _priceOfOneTokenInWei, beneficiary);
     }
+    
   
     /**
      * @dev Establece el precio al que se venderá el token ECTSToken.
