@@ -63,8 +63,9 @@
                     <input type="text" class="form-control" id="descriptionURI"
                         placeholder="Enlace al temario de la asignatura" required>
                 </div>
-                <div class="text-center"><button type="submit" class="btn btn-lg btn-primary">Enviar</button>
-                    
+                <div class="text-center">
+                    <button type="submit" class="btn btn-lg btn-primary">Publicar</button>
+                    <button type="button" class="btn btn-lg btn-primary" id="cancelar">Cancelar</button>
                 </div>
             </form>
         </div>
@@ -86,6 +87,9 @@
                 );
             return false;
         });
+        $('#cancelar').click(function () {
+            document.location = "/universidades.html";
+        })
     </script>
 </body>
 

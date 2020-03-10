@@ -15,14 +15,20 @@ contract UniversityPlatform is Ownable{
     //Events
     event BuyTokens(uint256 amount, uint256 priceOfOneTokenInWei, address msgsender);
     event NewPrice(uint256 tokenpricewei);
+    event NewPriceForRefund(uint256 tokenpriceweiforrefund);
     event UniversityRegistred(address account);
     event StudentRegistred(address account);
+    event RefuntECTS(address _from, address _to, uint256 _amount);
     
     // Smartcontracts relacionados
     ECTSToken private _token;
     
-    //Precio de un token en wei
+    //Precio de un token en wei a la venta
     uint256 private _priceOfOneTokenInWei;
+    
+    //Precio de un token cuando se reembolsa
+    //El modelo de negocio se basa en la diferencia de precio entre la compra y la venta, la diferencia es lo que se queda la plataforma
+    uint256 private _priceOfOneTokenInWeiForRefund;
   
     //Total tokens vendidos en wei
     uint256 private _weiRaised;
@@ -43,7 +49,8 @@ contract UniversityPlatform is Ownable{
      */
     constructor() public {
         _token = new ECTSToken(); //Creamos el nuevo token que vamos a intercambiar
-        _priceOfOneTokenInWei=((76/100) * 10**18); //Inicialmente establezco el valor en 0,76 ETHER que son unos 150€
+        _priceOfOneTokenInWei=((76/100) * 10**18); //Inicialmente establezco el valor en 0,76 ETHER que son unos 150€. Este valor puede modificarse posteriormente.
+        _priceOfOneTokenInWeiForRefund=((56/100) * 10**18); //Inicialmente establezco el valor en 0,56 ETHER que son unos 110€. Este valor puede modificarse posteriormente.
     }
     
     function getECTSTokenAddress() public view onlyOwner returns (address){
@@ -150,6 +157,32 @@ contract UniversityPlatform is Ownable{
     function setTokenPrice(uint256 tokenpricewei) public onlyOwner{
         _priceOfOneTokenInWei = tokenpricewei;
         emit NewPrice(tokenpricewei);
+    }
+    
+    /**
+     * @dev Establece el precio al que se recomprará el token ECTSToken.
+     * Emite un evento {NewPriceForRefund} con `tokenpriceweiforrefund` indicando el nuevo precio del token
+     * @param tokenpriceweiforrefund Precio del token en wei para el reembolso
+     */
+    function setTokenPriceForRefund(uint256 tokenpriceweiforrefund) public onlyOwner{
+        _priceOfOneTokenInWeiForRefund = tokenpriceweiforrefund;
+        emit NewPriceForRefund(tokenpriceweiforrefund);
+    }
+    
+    /**
+     * @dev Recibe la petición de reembolso de ECTS desde una universidad que los ha aprobado previamente
+     * Emite un evento ECTS reembolsados {refuntECTS}
+     * @param account Cuenta a la que hay que enviar el ether
+     * @param amount Cantidad de ECTS que se quieren compensar
+     * @return uint256 Cantidad de wei recompensado
+     */
+    function refundECTS(address account, uint256 amount) public onlyRegistredUser returns (uint256) {
+        _token.transferFrom(account, address(this), amount);
+        uint256 amountWei = _priceOfOneTokenInWeiForRefund.mul(amount);
+        address payable accountpayable = address(uint160(account));
+        accountpayable.transfer(amountWei);
+        emit RefuntECTS(address(this), account, amount);
+        return amountWei;
     }
 
 }

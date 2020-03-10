@@ -92,8 +92,8 @@
                 } else {
                     var r = confirm("¿Estás seguro que quieres matricularte en esta asignatura?");
                     if (r == true) {
-                        matricularEnAsignatura(univSC, asignatura).then(v => {
-                            console.log(`Matriculación en la asignatura ${asignatura} de ${univSC} con tokenId ${v.events.EnrolledInSubject.returnValues.tokenId}.`);
+                        matricularEnAsignatura(univSC, asignatura).then(function([v,tokenId]){
+                            console.log(`Matriculación en la asignatura ${asignatura} de ${univSC} con tokenId ${tokenId}.`);
                             document.location="/estudiantes.html";
                         }).catch(err => {
                             console.log(err);

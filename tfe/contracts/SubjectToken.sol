@@ -9,7 +9,6 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     
     event SubjectMinted(address _to);
     event CreateNewSubject(address scAddress, string name, string symbol, string descriptionURI);
-    event SubjectApproved(uint256 _id);
     event ActivityAdded(uint256 _id, string name);
     
     struct Activity {
@@ -38,6 +37,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
         
         _price = price;
         _setBaseURI(descriptionURI);
+        lastTokenIndex = 0;
         emit CreateNewSubject(address(this), name, symbol, descriptionURI);
     }
     
@@ -56,10 +56,10 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     function mint(address to) public onlyOwner belowLimit onTime returns(uint256) {
         require(balanceOf(to)<1, "SubjectToken: this student is already enrolled");
         increase();
-        _safeMint(to,lastTokenIndex+1);
         lastTokenIndex = lastTokenIndex + 1;
+        _safeMint(to,lastTokenIndex);
         emit SubjectMinted(to);
-        return lastTokenIndex - 1;
+        return lastTokenIndex;
     }
 
     /**
@@ -71,10 +71,11 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     
     /**
      * @dev Nos permite marcar una asignatura como aprobada una vez el alumno la ha superado
+     * Únicamente puede llamar la universidad propietaria del smart contract
+     * @param tokenId El identificador del token que queremos aprobar.
      */
     function setSubjectApproved(uint256 tokenId) public onlyOwner {
         _subjectApproved[tokenId] = true;
-        emit SubjectApproved(tokenId);
     }
     
     /**

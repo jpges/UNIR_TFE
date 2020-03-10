@@ -10,6 +10,8 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+        integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
     <!-- JS Script libraries de terceros -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -46,14 +48,16 @@
             </div>
         </div>
         <div class="my-2 card">
-            <div class="card-header">Lista de matrículas</div>
+            <div class="card-header">Lista de matrículas en las que estás matriculado</div>
             <div class="card-body">
                 <table class="table" id="tablamatriculas">
                     <thead>
                         <tr>
-                            <th>Firstname</th>
-                            <th>Lastname</th>
-                            <th>Email</th>
+                            <th>Asignatura</th>
+                            <th>Símbolo</th>
+                            <th>ECTSs</th>
+                            <th>Temario</th>
+                            <th>&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -73,6 +77,7 @@
                             <th>Cuenta universidad</th>
                             <th class="col-sm-6">Nombre</th>
                             <th>Deposito&nbsp;(ECTS)</th>
+                            <th>&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,17 +105,29 @@
                 });
             getTablaMatriculas()
                 .then(function (result) {
-                    addContentTable("tablamatriculas", result);
+                    let tablearray = new Array;
+                    for (let row of result) {
+                        let aprobada = (row[6] ? '<span style="font-size: 2em; color: Green;"><i class="fas fa-award" title="Aprobado"></i></span>' : '<span style="font-size: 2em; color: Tomato;"><i class="fas fa-times-circle" title="Suspenso o no evaluado"></i></span>');
+                        let fila = [row[2], row[3], row[4], row[5], aprobada];
+                        tablearray.push(fila);
+                    }
+                    addContentTable("tablamatriculas", tablearray);
                     $('#loader').hide();
+                }).catch(err =>{
+                    console.log(err);
+                    alert("Se ha producido un error inesperado al cargar la tabla de matriculas. Consulte con su administrador.");
                 });
             getTablaDepositosPropios()
                 .then(function (result) {
                     let tablearray = new Array;
                     for (let row of result) {
-                        var fila = [row[0],row[1],row[2],`<a class="btn btn-primary text-light float-right" href="matricular.html?univ=${row[0]}"/>Asignaturas</a>`];
+                        var fila = [row[0], row[1], row[2], `<a class="btn btn-primary text-light float-right" href="matricular.html?univ=${row[0]}"/>Asignaturas</a>`];
                         tablearray.push(fila);
                     }
                     addContentTable("tabladepositos", tablearray);
+                }).catch(err => {
+                    console.log(err);
+                    alert("Se ha producido un error inesperado al cargar la tabla de depositos. Consulte con su administrador.");
                 });
         });
         $('#cerrar').click(function () {
@@ -125,4 +142,5 @@
         });
     </script>
 </body>
+
 </html>

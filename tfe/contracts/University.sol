@@ -29,6 +29,8 @@ contract University is Ownable{
     //Events
     event PublishNewSubject(string subjectname, address accountSCSubject);
     event UniversityDepositRegistred(address _from, address _to, uint256 _amount);
+    event SubjectApproved(address subject, uint256 tokenId);
+    event EnrolledInSubject(address to, address subject, uint256 tokenId);
     
     /**
      * @dev Inicializa el contrato apuntando a los SC que se relacionan con este.
@@ -38,6 +40,7 @@ contract University is Ownable{
     constructor(string memory name, address scAddressToken) public{
         _name = name;
         _addrtoken = scAddressToken;
+        UniversityBalance = 0;
     }
     
     // Guardamos las asignaturas emitidas por la universidad
@@ -47,6 +50,10 @@ contract University is Ownable{
     // Guardamos un deposito de tokens ECTSToken para cada estudiante que lo adquiere
     address[] private _deposits;
     mapping (address => StructDeposit ) private _universityStudentBalances;
+    
+    // Variable donde guardamos el total de ECTS que ya han sido recibidos por la matrículas en las asignaturas.
+    // Este total será intercambiado por Ethers nuevamente contra la plataforma de la universidad, cerrando de esta forma el ciclo económico.
+    uint256 public UniversityBalance;
 
     /**
      * @dev Devuelve el nombre de la universidad.
@@ -85,6 +92,20 @@ contract University is Ownable{
     }
     
     /*
+    * @dev Nos permite marcar una matrícula como aprobada
+    * Emite el evento SubjectApproved cuando se aprueba la asignatura
+    * @param addressSCSubject Dirección del smart contract que representa la asignatura
+    * @param tokenId Identificador del token que queremos aprobar
+    * @return bool Devuelve true si todo ha ido bien
+    */
+    function setSubjectApproved(address addressSCSubject, uint256 tokenId) public onlyOwner returns (bool){
+        SubjectToken _subjectToken = SubjectToken(addressSCSubject);
+        _subjectToken.setSubjectApproved(tokenId);
+        emit SubjectApproved(addressSCSubject, tokenId);
+        return true;
+    }
+    
+    /*
     * @dev Recupera una lista de las asignaturas publicadas por la universidad
     * @return address[] Array con las direcciones de las asignaturas
     */
@@ -117,7 +138,7 @@ contract University is Ownable{
         // Transfiere los tokens propiedad del alumno de su cuenta a la de esta universidad.
         // Antes de llamar a este método el alumno deberá haber aprobado la cuenta de esta universidad para la cantidad de tokens que quiere transferir
         ECTSToken _token = ECTSToken(_addrtoken);
-        _token.transferFrom(student, address(this), amountTokens);
+        _token.transferFrom(student, owner(), amountTokens);
         
         if (!_universityStudentBalances[student].exists){
             _deposits.push(student);        
@@ -129,7 +150,7 @@ contract University is Ownable{
         _universityStudentBalances[student].studentname = studentname;
         _universityStudentBalances[student].balance = (_universityStudentBalances[student].balance).add(amountTokens);
 
-        emit UniversityDepositRegistred(student, address(this), amountTokens);
+        emit UniversityDepositRegistred(student, owner(), amountTokens);
         return true;
     }
     
@@ -139,17 +160,20 @@ contract University is Ownable{
     * Se emite un evento {EnrolledInSubject}
     * @param accountSubject Cuenta de la asignatura en la que quiere matricularse
     */
-    function enrollInSubject(address student, address accountSubject) public returns (uint256){
+    function enrollInSubject(address accountSubject) public returns (uint256){
         require(isPublisedSubject(accountSubject), "University: accountSubject not found.");
         SubjectToken sub = SubjectToken(accountSubject);
-        require(_universityStudentBalances[student].balance >= sub.price(), "University: Not enough tokens in deposit.");
-        
+        require(_universityStudentBalances[_msgSender()].balance >= sub.price(), "University: Not enough tokens in deposit.");
+        require(sub.balanceOf(_msgSender())<1, "SubjectToken: this student is already enrolled");
         //Le mintamos un nuevo token
-        uint256 tokenId = sub.mint(student);
+        uint256 tokenId = sub.mint(_msgSender());
         
-        //Le restamos los ECTS del deposito
-        _universityStudentBalances[student].balance = (_universityStudentBalances[student].balance).sub(sub.price());
-        
+        //Restamos los ECTS del precio de la asignatura del deposito del estudiante y los añadimos al balance de la universidad para
+        //que pueda compensarlos por ether
+        UniversityBalance = UniversityBalance.add(sub.price());
+        _universityStudentBalances[_msgSender()].balance = (_universityStudentBalances[_msgSender()].balance).sub(sub.price());
+        emit EnrolledInSubject(_msgSender(), accountSubject, tokenId);
         return tokenId;
     }
+    
 }

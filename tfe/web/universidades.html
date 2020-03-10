@@ -42,11 +42,11 @@
                 <table class="table" id="tablaasignaturas">
                     <thead>
                         <tr>
-                            <th class="col-sm-4">Cuenta despliegue</th>
-                            <th class="col-sm-4">Asignatura</th>
-                            <th class="col-sm-1">Símbolo</th>
-                            <th class="col-sm-1">ECTS</th>
-                            <th class="col-sm-2">Temario</th>
+                            <th>Asignatura</th>
+                            <th>Símbolo</th>
+                            <th>ECTS</th>
+                            <th>Temario</th>
+                            <th>&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,7 +86,13 @@
                 });
             getTablaAsignaturas(localStorage.getItem("accountUniversity"),localStorage.getItem("accountSCUniversity"))
                 .then(function (result) {
-                    addContentTable("tablaasignaturas", result);
+                    let tablearray = new Array;
+                    for (let row of result) {
+                        let alumnos = `<a class="btn btn-primary text-light float-right" href="alumnosasignatura.html?subject=${row[0]}"/>Alumnos</a>`;
+                        let fila = [row[1], row[2], row[3], row[4], alumnos];
+                        tablearray.push(fila);
+                    }
+                    addContentTable("tablaasignaturas", tablearray);
                     $('#loader').hide();
                 });
             getTablaDepositos()

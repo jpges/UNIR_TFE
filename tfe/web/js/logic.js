@@ -164,7 +164,7 @@ function getDeposito(owner) {
 		from: accountUniversity,
 		gas: 30000
 	}).then(v => {
-		return [owner, v[0], v[1]];
+		return [owner, decodeURI(v[0]), v[1]];
 	});
 }
 
@@ -197,6 +197,71 @@ function closeUniversitySession() {
 	localStorage.removeItem("accountSCUniversity");
 	localStorage.removeItem('accountUniversity');
 	localStorage.removeItem('pps');
+}
+
+function getTablaAlumnos(accountUniversity, subject) {
+	return getNumeroMatriculados(accountUniversity, subject).then(v => {
+		let numeromatriculados = parseInt(v);
+		let promises = [];
+		for (var i = 1; i <= numeromatriculados; i++) {
+			promises.push(getMatriculado(accountUniversity, subject, i));
+		}
+		return Promise.all(promises);
+	});
+}
+
+function getNumeroMatriculados(accountUniversity, subject) {
+	let SCSubject = new web3.eth.Contract(ABI_Subject, subject);
+	return SCSubject.methods.lastTokenIndex().call({
+		from: accountUniversity,
+		gas: 30000
+	});
+}
+
+function getMatriculado(accountUniversity, subject, tokenId) {
+	let SCSubject = new web3.eth.Contract(ABI_Subject, subject);
+	return SCSubject.methods.ownerOf(tokenId).call({
+		from: accountUniversity,
+		gas: 30000
+	}).then(owner => {
+		return SCSubject.methods.isSubjectApproved(tokenId).call({
+			from: accountUniversity,
+			gas: 30000
+		}).then(aprobado => {
+			return [tokenId, owner, aprobado];
+		});
+	}).then(function ([tokenId, owner, aprobado]) {
+		return SCPlataforma.methods.getStudent(owner).call({
+			from: accountUniversity,
+			gas: 30000
+		}).then(accountSCStudent => {
+			return [tokenId, owner, aprobado, accountSCStudent];
+		});
+	}).then(function ([tokenId, owner, aprobado, accountSCStudent]) {
+		let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
+		return SCStudent.methods.name().call({
+			from: accountUniversity,
+			gas: 30000
+		}).then(name => {
+			return [tokenId, owner, aprobado, accountSCStudent, name];
+		});
+	});
+}
+
+function getNameAsignatura(account, subject){
+	let SCSubject = new web3.eth.Contract(ABI_Subject, subject);
+	return SCSubject.methods.name().call({
+		from: account,
+		gas: 30000
+	});
+}
+
+function aprobarAsignatura(account, accountSC, subject, tokenId){
+	let SCUniversity = new web3.eth.Contract(ABI_University, accountSC);
+	return SCUniversity.methods.setSubjectApproved(subject, tokenId).send({
+		from: account,
+		gas: 100000
+	});
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,25 +398,45 @@ function getTablaMatriculas() {
 	let accountStudent = localStorage.getItem("accountStudent");
 	let accountSCStudent = localStorage.getItem("accountSCStudent");
 	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
-	var result = SCStudent.methods.getSubjectsInWitchEnrolled().call({
+	return SCStudent.methods.getSubjectsInWitchEnrolled().call({
 		from: accountStudent,
 		gas: 30000
 	}).then(function (_subjects) {
 		let promises = [];
 		_subjects.forEach(_subject => {
-			promises.push(getIdToken(_subject));
 			promises.push(getInfoSubject(_subject));
 		});
 		return Promise.all(promises);
+	}).then(function (_subjects) {
+		let promises = [];
+		_subjects.forEach(_subject => {
+			promises.push(getMatricula(accountStudent, accountSCStudent, _subject));
+		});
+		return Promise.all(promises);
 	});
-	return result;
 }
 
-function getIdToken(subjectaccount) {
-	let accountStudent = localStorage.getItem("accountStudent");
-	let accountSCStudent = localStorage.getItem("accountSCStudent");
+function getMatricula(accountStudent, accountSCStudent, subject) {
+	return getIdToken(accountStudent, accountSCStudent, subject[0]).then(v => {
+		return [subject[0], v, subject[1], subject[2], subject[3], subject[4]];
+	}).then(v => {
+		return isSubjectApproved(accountStudent, v[0], v[1]).then(z => {
+			return [v[0], v[1], v[2], v[3], v[4], v[5], z];
+		});
+	});
+}
+
+function getIdToken(accountStudent, accountSCStudent, subjectaccount) {
 	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
-	var result = SCStudent.methods.getEnrollementTokenId(subjectaccount).call({
+	return SCStudent.methods.getEnrollementTokenId(subjectaccount).call({
+		from: accountStudent,
+		gas: 30000
+	});
+}
+
+function isSubjectApproved(accountStudent, subjectaccount, tokenId) {
+	let SCSubject = new web3.eth.Contract(ABI_Subject, subjectaccount);
+	var result = SCSubject.methods.isSubjectApproved(tokenId).call({
 		from: accountStudent,
 		gas: 30000
 	});
@@ -374,7 +459,7 @@ function getTablaDepositosPropios() {
 	});
 }
 
-function getDepositosPropio(accountStudent, accountSC){
+function getDepositosPropio(accountStudent, accountSC) {
 	let promises = [];
 	promises.push(accountSC);
 	promises.push(getNameSCUniversidad(accountStudent, accountSC));
@@ -432,27 +517,35 @@ function depositarECTSTokens(studentname) {
 	let accountSCStudent = localStorage.getItem("accountSCStudent");
 	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
 
-	return SCECTSToken.methods.approve(accountSCUniv,cantidadECTS).send({
+	return SCECTSToken.methods.approve(accountSCUniv, cantidadECTS).send({
 		gas: 5000000,
 		from: accountStudent
-	}).then(function(result){
-		return SCStudent.methods.addDeposit(studentname,accountSCUniv,cantidadECTS).send({
+	}).then(function (result) {
+		return SCStudent.methods.addDeposit(studentname, accountSCUniv, cantidadECTS).send({
 			gas: 5000000,
 			from: accountStudent
-			}).then(v => {
-				console.log("Ejecutada transferencia de deposito.");
-				console.log(v);
-			});
+		}).then(v => {
+			console.log("Ejecutada transferencia de deposito.");
+			console.log(v);
+		});
 	});
 }
 
 function matricularEnAsignatura(univSC, asignatura) {
 	let accountStudent = localStorage.getItem("accountStudent");
-	let accountSCStudent = localStorage.getItem("accountSCStudent");
-	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
-	return SCStudent.methods.enrollInSubject(univSC, asignatura).send({
+	let SCStudent = new web3.eth.Contract(ABI_Student,localStorage.getItem("accountSCStudent"));
+	let SCUniversity = new web3.eth.Contract(ABI_University, univSC);
+	return SCUniversity.methods.enrollInSubject(asignatura).send({
 		gas: 5000000,
 		from: accountStudent
+	}).then( result => {
+		let tokenId=result.events.EnrolledInSubject.returnValues.tokenId;
+		return SCStudent.methods.recordEnrollInSubject(univSC, asignatura, tokenId).send({
+			gas: 5000000,
+			from: accountStudent
+		}).then(v => {
+			return [v,tokenId];
+		});
 	});
 }
 

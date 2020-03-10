@@ -20,7 +20,6 @@ contract Student is Ownable {
     
     //Events
     event StudentDepositRegistred(address _from, address _to, uint256 _amount);
-    event EnrolledInSubject(address _to, address subject, uint256 tokenId);
     
     //Estructura para guardar matriculas
     struct Enrollement{
@@ -131,26 +130,21 @@ contract Student is Ownable {
     }
     
     /*
-    * @dev Matricula al alumno en una asignatura
+    * @dev Guarda en la cuenta del alumno las asignaturas en las que está matriculado
     * Únicamente se puede llamar a este método desde la propia cuenta del estudiante
-    * Primero verifica que no esté ya matriculado
-    * @param accountSCUniversity Cuenta de la asignatura universidad que ofrece la asignatura
+    * @param accountSCUniversity Cuenta de la universidad en la que nos hemos matriculado
     * @param accountSCSubject Cuenta de la asignatura en la que quiere matricularse
-    * @returns uint256 TokenId, el identificador que representa su matrícula
+    * @param tokenId, el identificador que representa su matrícula
+    * @returns bool true si todo va bien
     */
-    function enrollInSubject(address accountSCUniversity, address accountSCSubject) public onlyOwner returns (uint256){
-        require(!_subjectsEnrollements[accountSCSubject].exists, "University: Student is already enrolled.");
-        University univ = University(accountSCUniversity);
-        uint256 tokenId = univ.enrollInSubject(owner(), accountSCSubject);
+    function recordEnrollInSubject(address accountSCUniversity, address accountSCSubject, uint256 tokenId) public onlyOwner returns (bool){
         _subjectsInWitchEnrolled.push(accountSCSubject);
         _subjectsEnrollements[accountSCSubject].tokenid = tokenId;
         _subjectsEnrollements[accountSCSubject].exists = true;
         
         SubjectToken subj = SubjectToken(accountSCSubject);
         _universityDepositBalance[accountSCUniversity].balance = (_universityDepositBalance[accountSCUniversity].balance).sub(subj.price());
-        
-        emit EnrolledInSubject(owner(), accountSCSubject, tokenId);
-        return tokenId;
+        return true;
     }
     
 }
