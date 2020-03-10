@@ -84,7 +84,7 @@
                 .then(function (result) {
                     document.getElementById("name").innerText = result;
                 });
-            getTablaAsignaturas()
+            getTablaAsignaturas(localStorage.getItem("accountUniversity"),localStorage.getItem("accountSCUniversity"))
                 .then(function (result) {
                     addContentTable("tablaasignaturas", result);
                     $('#loader').hide();

@@ -98,12 +98,10 @@ function getNameSCUniversidad(caller, addressSCUniv) {
 	});
 }
 
-function getTablaAsignaturas() {
-	let accountUniversity = localStorage.getItem("accountUniversity");
-	let accountSCUniversity = localStorage.getItem("accountSCUniversity");
-	let SCUniversity = new web3.eth.Contract(ABI_University, accountSCUniversity);
+function getTablaAsignaturas(account, accountSC) {
+	let SCUniversity = new web3.eth.Contract(ABI_University, accountSC);
 	var result = SCUniversity.methods.getSubjects().call({
-		from: accountUniversity,
+		from: account,
 		gas: 30000
 	}).then(function (_subjects) {
 		let promises = [];
@@ -420,13 +418,6 @@ function buyECTSTokens() {
 		gas: 5000000,
 		from: accountStudent,
 		value: toWei
-	}).on('receipt', function (receipt) {
-		console.log(receipt);
-		return true
-	}).on('error', function (error, receipt) { // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-		console.error("ERROR COMPRANDO TOKENS");
-		console.error(error);
-		return false;
 	}).then(v => {
 		console.log("Ejecutada compra de tokens.");
 		console.log(v);
@@ -444,18 +435,24 @@ function depositarECTSTokens(studentname) {
 	return SCECTSToken.methods.approve(accountSCUniv,cantidadECTS).send({
 		gas: 5000000,
 		from: accountStudent
-	}).on('receipt', function (receipt) {
+	}).then(function(result){
 		return SCStudent.methods.addDeposit(studentname,accountSCUniv,cantidadECTS).send({
+			gas: 5000000,
+			from: accountStudent
+			}).then(v => {
+				console.log("Ejecutada transferencia de deposito.");
+				console.log(v);
+			});
+	});
+}
+
+function matricularEnAsignatura(univSC, asignatura) {
+	let accountStudent = localStorage.getItem("accountStudent");
+	let accountSCStudent = localStorage.getItem("accountSCStudent");
+	let SCStudent = new web3.eth.Contract(ABI_Student, accountSCStudent);
+	return SCStudent.methods.enrollInSubject(univSC, asignatura).send({
 		gas: 5000000,
 		from: accountStudent
-		}).then(v => {
-			console.log("Ejecutada transferencia de deposito.");
-			console.log(v);
-		});
-	}).on('error', function (error, receipt) { // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-		console.error("ERROR TRANSFIRIENDO ECTS (SCECTSToken.methods.approve)");
-		console.error(error);
-		return false;
 	});
 }
 

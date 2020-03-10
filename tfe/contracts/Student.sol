@@ -20,6 +20,7 @@ contract Student is Ownable {
     
     //Events
     event StudentDepositRegistred(address _from, address _to, uint256 _amount);
+    event EnrolledInSubject(address _to, address subject, uint256 tokenId);
     
     //Estructura para guardar matriculas
     struct Enrollement{
@@ -140,10 +141,15 @@ contract Student is Ownable {
     function enrollInSubject(address accountSCUniversity, address accountSCSubject) public onlyOwner returns (uint256){
         require(!_subjectsEnrollements[accountSCSubject].exists, "University: Student is already enrolled.");
         University univ = University(accountSCUniversity);
-        uint256 tokenId = univ.enrollInSubject(accountSCSubject);
+        uint256 tokenId = univ.enrollInSubject(owner(), accountSCSubject);
         _subjectsInWitchEnrolled.push(accountSCSubject);
         _subjectsEnrollements[accountSCSubject].tokenid = tokenId;
         _subjectsEnrollements[accountSCSubject].exists = true;
+        
+        SubjectToken subj = SubjectToken(accountSCSubject);
+        _universityDepositBalance[accountSCUniversity].balance = (_universityDepositBalance[accountSCUniversity].balance).sub(subj.price());
+        
+        emit EnrolledInSubject(owner(), accountSCSubject, tokenId);
         return tokenId;
     }
     

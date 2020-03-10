@@ -63,6 +63,7 @@
         </div>
         <div id="loader"></div>
         <script type='text/javascript'>
+            var ectss = 0;
             $().ready(function () {
                 $('#loader').show();
                 initWeb3();
@@ -71,18 +72,36 @@
                     .then(function (result) {
                         document.getElementById("universidad1").innerText = result[1];
                         document.getElementById("universidad2").innerText = result[1];
-                        document.getElementById("ectss").innerText = result[2];
+                        ectss = result[2];
+                        document.getElementById("ectss").innerText = ectss;
                     });
-                /*getTablaAsignaturas()
+                getTablaAsignaturas(localStorage.getItem("accountStudent"), univSC)
                     .then(function (result) {
-                        addContentTable("tablaasignaturas", result);
-                        
-                    });            */
-                $('#loader').hide();
+                        let tablearray = new Array;
+                        for (let row of result) {
+                            var fila = [row[1], row[2], row[3], row[4], `<a class="btn btn-primary text-light float-right" onclick="javascript:matricular('${row[0]}',${row[3]});"/>Matricular</a>`];
+                            tablearray.push(fila);
+                        }
+                        addContentTable("tablaasignaturas", tablearray);
+                        $('#loader').hide();
+                    });
             });
-            $('#publicar').click(function () {
-                document.location = "/registroasignatura.html";
-            });
+            function matricular(asignatura, precio) {
+                if (precio > ectss) {
+                    alert("No dispones de suficiente deposito en esta universidad para matricularte en esta asignatura.")
+                } else {
+                    var r = confirm("¿Estás seguro que quieres matricularte en esta asignatura?");
+                    if (r == true) {
+                        matricularEnAsignatura(univSC, asignatura).then(v => {
+                            console.log(`Matriculación en la asignatura ${asignatura} de ${univSC} con tokenId ${v.events.EnrolledInSubject.returnValues.tokenId}.`);
+                            document.location="/estudiantes.html";
+                        }).catch(err => {
+                            console.log(err);
+                            alert("Se ha producido la siguiente excepción: " + err);
+                        });
+                    }
+                }
+            }
             $('#salir').click(function () {
                 document.location = "/estudiantes.html";
             });

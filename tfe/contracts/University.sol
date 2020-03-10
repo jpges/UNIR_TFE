@@ -29,7 +29,6 @@ contract University is Ownable{
     //Events
     event PublishNewSubject(string subjectname, address accountSCSubject);
     event UniversityDepositRegistred(address _from, address _to, uint256 _amount);
-    event EnrolledInSubject(address _to, address subject, uint256 tokenId);
     
     /**
      * @dev Inicializa el contrato apuntando a los SC que se relacionan con este.
@@ -63,16 +62,6 @@ contract University is Ownable{
      */
     function isPublisedSubject(address account) private view returns (bool){
         return _subjects[account];
-    }
-    
-    /**
-     * @dev Indica si el deposito existente de una cuenta es superior al precio recibido
-     * @param account es la cuenta que se quiere comprobar
-     * @param price de la asignatura
-     * @return bool Suciente o no
-     */
-    function enoughDeposit(address account, uint256 price) private view returns (bool){
-        return (_universityStudentBalances[account].balance >= price);
     }
     
     /*
@@ -150,18 +139,17 @@ contract University is Ownable{
     * Se emite un evento {EnrolledInSubject}
     * @param accountSubject Cuenta de la asignatura en la que quiere matricularse
     */
-    function enrollInSubject(address accountSubject) public returns (uint256){
+    function enrollInSubject(address student, address accountSubject) public returns (uint256){
         require(isPublisedSubject(accountSubject), "University: accountSubject not found.");
         SubjectToken sub = SubjectToken(accountSubject);
-        require(enoughDeposit(_msgSender(), sub.price()), "University: Not enough tokens in deposit.");
+        require(_universityStudentBalances[student].balance >= sub.price(), "University: Not enough tokens in deposit.");
         
         //Le mintamos un nuevo token
-        uint256 tokenId = sub.mint(_msgSender());
+        uint256 tokenId = sub.mint(student);
         
         //Le restamos los ECTS del deposito
-        _universityStudentBalances[_msgSender()].balance = (_universityStudentBalances[_msgSender()].balance).sub(sub.price());
+        _universityStudentBalances[student].balance = (_universityStudentBalances[student].balance).sub(sub.price());
         
-        emit EnrolledInSubject(_msgSender(), accountSubject, tokenId);
         return tokenId;
     }
 }
