@@ -93,7 +93,7 @@ contract UniversityPlatform is Ownable{
     * plataforma o la propia cuenta gestora.
     */
     modifier onlyRegistredUser(){
-        if((_universities[_msgSender()] != address(0x0)) || (_students[_msgSender()] != address(0x0)) || (_msgSender() == owner())){
+        if((_universities[msg.sender] != address(0x0)) || (_students[msg.sender] != address(0x0)) || (msg.sender == owner())){
             _;
         }
     }

@@ -149,29 +149,4 @@ contract University is Ownable{
         return true;
     }
     
-    /*
-    * @dev Matricula a un alumno en una asignatura
-    * Primero verifica que la asignatura en la que quiere matricularse existe
-    * Se emite un evento {EnrolledInSubject}
-    * @param accountSubject Cuenta de la asignatura en la que quiere matricularse
-    */
-    function enrollInSubject(address accountSubject) public returns (uint256){
-        require(isPublisedSubject(accountSubject), "University: accountSubject not found.");
-        SubjectToken sub = SubjectToken(accountSubject);
-        require(_universityStudentBalances[_msgSender()].balance >= sub.price(), "University: Not enough tokens in deposit.");
-        require(sub.balanceOf(_msgSender())<1, "SubjectToken: this student is already enrolled");
-        //Le mintamos un nuevo token
-        uint256 tokenId = sub.mint(_msgSender());
-        
-        //Restamos los ECTS del precio de la asignatura del deposito del estudiante y ya que quedan liberados del depósito se los transferimos del smart contract de la universidad
-        //a la propia cuenta de la universidad para que pueda reembolsarlos contra la plataforma por ether
-        _universityStudentBalances[_msgSender()].balance = (_universityStudentBalances[_msgSender()].balance).sub(sub.price());
-        ECTSToken _token = ECTSToken(_addrtoken);
-        _token.transfer(owner(), sub.price());
-        emit EnrolledInSubject(_msgSender(), accountSubject, tokenId);
-        return tokenId;
-    }
-    
-    
-    
 }

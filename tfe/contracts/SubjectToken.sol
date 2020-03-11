@@ -21,6 +21,9 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     // Precio del SubjectToken
     uint256 private _price;
     
+    // BaseURI: En versiones proximas ya está incluido en el ERC721. Sirve para tener una URI general de la asignatura
+    string public baseURI;
+    
     // Control de si una matrícula está aprobada o no
     mapping (uint256 => bool) private _subjectApproved;
     
@@ -36,7 +39,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
         require(price > 0, "SubjectToken: price is 0");
         
         _price = price;
-        _setBaseURI(descriptionURI);
+        baseURI = descriptionURI;
         lastTokenIndex = 0;
         emit CreateNewSubject(address(this), name, symbol, descriptionURI);
     }
@@ -57,7 +60,7 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
         require(balanceOf(to)<1, "SubjectToken: this student is already enrolled");
         increase();
         lastTokenIndex = lastTokenIndex + 1;
-        _safeMint(to,lastTokenIndex);
+        _mint(to,lastTokenIndex);
         emit SubjectMinted(to);
         return lastTokenIndex;
     }
