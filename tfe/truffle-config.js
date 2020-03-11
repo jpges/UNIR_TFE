@@ -36,6 +36,23 @@ module.exports = {
    */
 
   networks: {
+	ganache: {
+	 host: "127.0.0.1",
+	 port: 7545,
+   network_id: "*",
+   //gas: 0x989680,
+   //gasPrice: 0x0 
+	},
+
+	testnet: {
+	 host: "127.0.0.1",
+	 port: 22001,
+	 network_id: "*",
+	 gas: 0xffffff,
+	 gasPrice: 0x0,
+	 from: "0x74d4c56d8dcbc10a567341bfac6da0a8f04dc41d"
+	}
+
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
     // You should run a client (like ganache-cli, geth or parity) in a separate terminal
@@ -85,15 +102,15 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      // version: "0.5.1",    // Fetch exact version from solc-bin (default: truffle's version)
+      //version: "0.5.16",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-      // settings: {          // See the solidity docs for advice about optimization and evmVersion
-      //  optimizer: {
-      //    enabled: false,
-      //    runs: 200
-      //  },
+      settings: {          // See the solidity docs for advice about optimization and evmVersion
+        optimizer: {
+          enabled: false,
+          runs: 200
+        },
       //  evmVersion: "byzantium"
-      // }
+      }
     }
   }
 }
