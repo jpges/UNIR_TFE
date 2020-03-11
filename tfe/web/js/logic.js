@@ -8,7 +8,7 @@ function registrarUniversidad() {
 	var accountUniversity;
 
 	switch (environment) {
-		case 'testnet':
+		case TESTNET_PROVIDER:
 			accountUniversity = web3.personal.newAccount(password);
 			break;
 		default: //En este caso tirará de Ganache y Alastria
@@ -286,7 +286,7 @@ function registrarEstudiante() {
 	var accountStudent;
 
 	switch (environment) {
-		case 'testnet':
+		case TESTNET_PROVIDER:
 			accountStudent = web3.personal.newAccount(password);
 			break;
 		default: //En este caso tirará de Ganache y Alastria

@@ -31,7 +31,8 @@ async function settingAccounts() {
         case TESTNET:
             web3 = new Web3(new Web3.providers.HttpProvider(TESTNET_PROVIDER));
             try {
-                accounts.push(await web3.eth.accounts);
+                var account = web3.eth.accounts.create(web3.utils.randomHex(32));
+                accounts = [account.address.toString()];
             }
             catch (error) {
                 die(error, "La TestNet no responde en http://localhost:22001, por favor, comprueba que se encuentra en ejecución.");
@@ -63,7 +64,7 @@ async function settingAccounts() {
             break;
         default:
     }
-    if (accounts.length <= indexAccount) {
+    if (environment != TESTNET && accounts.length <= indexAccount) {
         console.error("************************************************************************************");
         console.error("************************************************************************************");
         console.error(" NO QUEDAN CUENTAS EN SU SISTEMA. SI NECESITA CREAR ALGUNA, DEBE REINICIARLO TODO");
@@ -80,12 +81,13 @@ function die(error, errorMessage) {
     console.error(errorMessage + error);
     //window.location.href = "about:blank";
     $('input[name=optradio]').prop('checked', false);
+    throw new Error(errorMessage);
 }
 
 async function unlockPlatformAccount() {
     switch (environment) {
         case TESTNET:
-            web3.personal.unlockAccount(accountPlataforma, "Passw0rd");
+            web3.eth.personal.unlockAccount(accountPlataforma, "Passw0rd");
             break;
         case ALASTRIA:
             web3.eth.personal.unlockAccount(accountPlataforma, "Alumnos_2018_Q4_IKx5srvT");
