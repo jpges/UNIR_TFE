@@ -31,7 +31,7 @@ async function settingAccounts() {
         case TESTNET:
             web3 = new Web3(new Web3.providers.HttpProvider(TESTNET_PROVIDER));
             try {
-                accounts = await web3.eth.getAccounts();
+                accounts.push(await web3.eth.accounts);
             }
             catch (error) {
                 die(error, "La TestNet no responde en http://localhost:22001, por favor, comprueba que se encuentra en ejecución.");
@@ -52,7 +52,7 @@ async function settingAccounts() {
                 "0xab2c680816421e56ba3274a37c3df455fba32725"
             ];
             break;
-        default: //En este caso tirará de Ganache
+        case GANACHE: //En este caso tirará de Ganache
             web3 = new Web3(new Web3.providers.HttpProvider(GANACHE_PROVIDER));
             try {
                 accounts = await web3.eth.getAccounts();
@@ -61,6 +61,7 @@ async function settingAccounts() {
                 die(error, "Ganache no responde en http://localhost:7545, por favor, comprueba que se encuentra en ejecución.");
             }
             break;
+        default:
     }
     if (accounts.length <= indexAccount) {
         console.error("************************************************************************************");
@@ -77,7 +78,8 @@ async function settingAccounts() {
 function die(error, errorMessage) {
     alert(errorMessage);
     console.error(errorMessage + error);
-    window.location.href = "about:blank";
+    //window.location.href = "about:blank";
+    $('input[name=optradio]').prop('checked', false);
 }
 
 async function unlockPlatformAccount() {
@@ -96,44 +98,36 @@ async function unlockPlatformAccount() {
 }
 
 async function asyncDeployContract(scname, account, abi, data, _arguments) {
-    const result = await deployContract(scname, account, abi, data, _arguments);
-    console.log(result);
-    return result;
+    return await deployContract(scname, account, abi, data, _arguments);
 }
 
 function deployContract(scname, account, abi, data, _arguments) {
     let newContractInstance;
     var Contract = new web3.eth.Contract(abi)
-    var tx;
-    try {
-        tx = Contract.deploy({
-            data: data,
-            arguments: _arguments
-        }).send({
-            gas: 6700000,
-            from: account
-        }, function (error, transactionHash) {
-            if (error) console.log(error);
-        })
-            .on('error', function (error, receipt) {
-                console.log(`ERROR DESPLEGANDO CONTRATO ${scname}`);
-                console.log("Error: " + error);
-            })
-            .on('receipt', function (receipt) {
-                console.debug(receipt);
-            })
-            .then(function (_newContractInstance) {
-                newContractInstance = _newContractInstance;
-                console.log(`Nueva instancia contrato ${scname}: ${newContractInstance._address}`);
-                return newContractInstance;
-            })
-            .catch((e) => {
-                console.log(`ERROR DESPLEGANDO CONTRATO: ${scname}` + e);
-            });
-    } catch (e) {
-        console.error(`ERROR DESPLEGANDO CONTRATO: ${scname}` + e);
-    }
-    return tx;
+
+    return Contract.deploy({
+        data: data,
+        arguments: _arguments
+    }).send({
+        gas: 6700000,
+        from: account
+    }, function (error, transactionHash) {
+        if (error) console.log(error);
+    }).once('confirmation', function (confirmationNumber, receipt) {
+        console.log(`DESPLEGANDO CONTRATO ${scname} confirmation: ` + confirmationNumber)
+    }).on('transactionHash', function (hash) {
+        console.log(`DESPLEGANDO CONTRATO ${scname} trans hash: ` + hash)
+    }).on('error', function (error) {
+        console.log(`DESPLEGANDO CONTRATO ${scname} error: ` + error);
+    }).on('receipt', function (receipt) {
+        console.debug(`DESPLEGANDO CONTRATO ${scname} receipt: ` + receipt.contractAddress)
+    }).then(function (_newContractInstance) {
+        newContractInstance = _newContractInstance;
+        console.log(`Nueva instancia contrato ${scname}: ${newContractInstance._address}`);
+        return newContractInstance;
+    }).catch(function (error) {
+        console.log(`ERROR DESPLEGANDO CONTRATO: ${scname}` + error);
+    });
 }
 
 function getSmartContrats() {

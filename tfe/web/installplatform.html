@@ -33,7 +33,7 @@
         </div>
         <div class="form-check-inline">
             <label class="form-check-label">
-                <input type="radio" class="form-check-input" name="optradio" value="ganache" checked="">Ganache
+                <input type="radio" class="form-check-input" name="optradio" value="ganache">Ganache
             </label>
         </div>
         <div class="form-check-inline">
@@ -53,11 +53,13 @@
     </form>
     <div id="loader"></div>
     <script type='text/javascript'>
-        $().ready(function () { initWeb3();});
+        $('input[name=optradio]').click(() => {
+            environment = $('input[name=optradio]:checked').val();           
+            localStorage.setItem('environment', environment);
+            initWeb3();
+        });
         $('#forminstall').submit(function () {
             $('#loader').show();
-            environment = $('input[name=optradio]:checked').val();
-            localStorage.setItem('environment', environment);
             install()
                 .then(function (result) {
                     $('#loader').hide();

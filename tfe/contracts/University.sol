@@ -141,7 +141,7 @@ contract University is Ownable{
         
         // Añade los tokens indicados en el depósito del alumno
         _universityStudentBalances[student].exists = true;
-        _universityStudentBalances[student].accountstudent =student;
+        _universityStudentBalances[student].accountstudent = student;
         _universityStudentBalances[student].studentname = studentname;
         _universityStudentBalances[student].balance = (_universityStudentBalances[student].balance).add(amountTokens);
 
