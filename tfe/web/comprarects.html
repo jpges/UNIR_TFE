@@ -53,24 +53,33 @@
     </div>
     <div id="loader"></div>
     <script>
+        var milliether = 0;
         $().ready(function () {
             initWeb3();
             getSmartContrats();
             let accountStudent = localStorage.getItem("accountStudent");
             getBalanceOfMilliEther(accountStudent).then(v => {
-                document.getElementById("ethers").innerHTML = v;
+                milliether = v;
+                document.getElementById("ethers").innerHTML = parseFloat(milliether).toFixed(2);
             });
         });
         $('#registryform').submit(function () {
             $('#loader').show();
-            buyECTSTokens()
+            let cantidadECTS = document.getElementById("cantidad").value;
+            
+            if (parseInt(cantidadECTS)*priceECTSInMilliEtherForBuy <= parseInt(milliether)){
+                buyECTSTokens(cantidadECTS,localStorage.getItem("accountStudent"))
                 .then(function (result) {
                     console.log(result);
                     document.location = "/estudiantes.html";
                 }).catch(function (err) {
-                    alert("No se ha podido realizar la compra, contacte con el administrador de la plataforma");
+                    alert("No se ha podido realizar la compra, contacte con el administrador de la plataforma. La excepción es: " + err);
                     $('#loader').hide();
                 });
+            }else{
+                alert(`Dispones únicamente de ${milliether} miliEther y para esa compra necesitas ${parseInt(cantidadECTS)*priceECTSInMilliEtherForBuy}.`);
+                $('#loader').hide();
+            }
             return false;
         });
         $('#salir').click(function () {

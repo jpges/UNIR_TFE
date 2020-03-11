@@ -4,6 +4,11 @@ var accountPlataforma = null;
 var SCPlataforma;
 var SMECTSToken;
 
+//TODO: El precio del ECTS debería capturarse de la plataforma lo tomamos de aquí porque en el servidor
+//aún así saltaría un error si superase el precio.
+var priceECTSInMilliEtherForBuy = 760;
+var priceECTSInMilliEtherForSale = 560;
+
 const GANACHE_PROVIDER = "http://localhost:7545";
 const ALASTRIA_PROVIDER = "http://138.4.143.82:8545";
 const TESTNET_PROVIDER = "http://localhost:22001";

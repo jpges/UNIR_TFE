@@ -40,7 +40,6 @@ contract University is Ownable{
     constructor(string memory name, address scAddressToken) public{
         _name = name;
         _addrtoken = scAddressToken;
-        UniversityBalance = 0;
     }
     
     // Guardamos las asignaturas emitidas por la universidad
@@ -50,10 +49,6 @@ contract University is Ownable{
     // Guardamos un deposito de tokens ECTSToken para cada estudiante que lo adquiere
     address[] private _deposits;
     mapping (address => StructDeposit ) private _universityStudentBalances;
-    
-    // Variable donde guardamos el total de ECTS que ya han sido recibidos por la matrículas en las asignaturas.
-    // Este total será intercambiado por Ethers nuevamente contra la plataforma de la universidad, cerrando de esta forma el ciclo económico.
-    uint256 public UniversityBalance;
 
     /**
      * @dev Devuelve el nombre de la universidad.
@@ -134,11 +129,11 @@ contract University is Ownable{
     * Se emite un evento {DepositRegistred}
     * @param amountTokens Cantidad de tokens que se quieren depositar
     */
-    function makeAnIncome(address student, string memory studentname, uint amountTokens) public returns (bool){
-        // Transfiere los tokens propiedad del alumno de su cuenta a la de esta universidad.
-        // Antes de llamar a este método el alumno deberá haber aprobado la cuenta de esta universidad para la cantidad de tokens que quiere transferir
+    function makeAnIncome(address student, string memory studentname, address accountSCUniversity, uint amountTokens) public returns (bool){
+        // Transfiere los tokens propiedad del alumno de su cuenta a la del smart contract de la universidad.
+        // Antes de llamar a este método el alumno deberá haber aprobado la cuenta de esta SC universidad para la cantidad de tokens que quiere transferir
         ECTSToken _token = ECTSToken(_addrtoken);
-        _token.transferFrom(student, owner(), amountTokens);
+        _token.transferFrom(student, accountSCUniversity, amountTokens);
         
         if (!_universityStudentBalances[student].exists){
             _deposits.push(student);        
@@ -150,7 +145,7 @@ contract University is Ownable{
         _universityStudentBalances[student].studentname = studentname;
         _universityStudentBalances[student].balance = (_universityStudentBalances[student].balance).add(amountTokens);
 
-        emit UniversityDepositRegistred(student, owner(), amountTokens);
+        emit UniversityDepositRegistred(student, accountSCUniversity, amountTokens);
         return true;
     }
     
@@ -168,12 +163,15 @@ contract University is Ownable{
         //Le mintamos un nuevo token
         uint256 tokenId = sub.mint(_msgSender());
         
-        //Restamos los ECTS del precio de la asignatura del deposito del estudiante y los añadimos al balance de la universidad para
-        //que pueda compensarlos por ether
-        UniversityBalance = UniversityBalance.add(sub.price());
+        //Restamos los ECTS del precio de la asignatura del deposito del estudiante y ya que quedan liberados del depósito se los transferimos del smart contract de la universidad
+        //a la propia cuenta de la universidad para que pueda reembolsarlos contra la plataforma por ether
         _universityStudentBalances[_msgSender()].balance = (_universityStudentBalances[_msgSender()].balance).sub(sub.price());
+        ECTSToken _token = ECTSToken(_addrtoken);
+        _token.transfer(owner(), sub.price());
         emit EnrolledInSubject(_msgSender(), accountSubject, tokenId);
         return tokenId;
     }
+    
+    
     
 }

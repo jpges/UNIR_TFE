@@ -264,6 +264,18 @@ function aprobarAsignatura(account, accountSC, subject, tokenId){
 	});
 }
 
+function reembolsar(accountUniversity, cantidad){
+	return SCECTSToken.methods.approve(accountSCPlataforma, cantidad).send({
+		gas: 5000000,
+		from: accountUniversity
+	}).then(function (result) {
+		return SCPlataforma.methods.refundECTS(accountUniversity, cantidad).send({
+			gas: 5000000,
+			from: accountUniversity
+		});
+	}); 
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //////////    Funciones estudiante
 ///////////////////////////////////////////////
@@ -360,10 +372,9 @@ function getNameEstudiante() {
 	return name;
 }
 
-function getBalanceOfECTS() {
-	let accountStudent = localStorage.getItem("accountStudent");
-	return SCECTSToken.methods.balanceOf(accountStudent).call({
-		from: accountStudent,
+function getBalanceOfECTS(account) {
+	return SCECTSToken.methods.balanceOf(account).call({
+		from: account,
 		gas: 30000
 	});
 }
@@ -486,9 +497,7 @@ function closeStudentSession() {
 	localStorage.removeItem('pps');
 }
 
-function buyECTSTokens() {
-	let cantidadECTS = document.getElementById("cantidad").value;
-	let accountStudent = localStorage.getItem("accountStudent");
+function buyECTSTokens(cantidadECTS, accountStudent) {
 	/*
 	TODO: Aquí hemos supuesto que el precio del ECTS es fijo a 760 miliEthers
 	Lo correcto sería preguntarle el precio a la plataforma de la universidad que es la que lo fija, pero por

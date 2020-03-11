@@ -87,7 +87,7 @@ contract Student is Ownable {
     function addDeposit(string memory studentname, address accountSCUniversity, uint amountTokens) public onlyOwner returns (bool){
         // Reconstruimos el enlace con la universidad y le decimos que se transfiera ahora los tokens
         University univ = University(accountSCUniversity);
-        if (univ.makeAnIncome(owner(), studentname, amountTokens)){
+        if (univ.makeAnIncome(owner(), studentname, accountSCUniversity, amountTokens)){
             //Añadimos el deposito
             if (!_universityDepositBalance[accountSCUniversity].exists){
                 _universityDepositBalance[accountSCUniversity].balance = 0;

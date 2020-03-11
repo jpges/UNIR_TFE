@@ -98,7 +98,7 @@
                     studentname = result;
                     document.getElementById("name").innerText = studentname;
                 });
-            getBalanceOfECTS()
+            getBalanceOfECTS(localStorage.getItem("accountStudent"))
                 .then(function (result) {
                     ectss = result;
                     document.getElementById("ectss").innerText = ectss;

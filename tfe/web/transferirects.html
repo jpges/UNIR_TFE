@@ -64,7 +64,7 @@
         $().ready(function () {
             initWeb3();
             getSmartContrats();
-            getBalanceOfECTS()
+            getBalanceOfECTS(localStorage.getItem("accountStudent"))
                 .then(function (result) {
                     ectss = parseInt(result);
                     document.getElementById("ectss").innerText = ectss;
