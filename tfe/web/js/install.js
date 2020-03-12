@@ -1,20 +1,23 @@
 function install() {
     //Desplegamos el UniversityPlatform
-    return deployContract('UniversityPlatform', accountPlataforma, ABI_UniversityPlatform,
-        DATA_UniversityPlatform).then(z => {
-            accountSCPlataforma = z._address;
-            return z.methods.getECTSTokenAddress().call({
-                from: accountPlataforma,
-                gas: 300000
-            }).then(v => {
-                console.log(v);
-                if (v){
+    return deployContract('ECTSToken', accountPlataforma, ABI_ECTSToken,
+        DATA_ECTSToken).then(z => {
+            accountSCECTSToken = z._address;
+            localStorage.setItem('accountSCECTSToken', accountSCECTSToken);
+            return deployContract('UniversityPlatform', accountPlataforma, ABI_UniversityPlatform, DATA_UniversityPlatform, [accountSCECTSToken])
+                .then(v => {
+                    accountSCPlataforma = v._address;
                     localStorage.setItem('accountSCPlataforma', accountSCPlataforma);
-                    localStorage.setItem('accountSCECTSToken', v);
-                    return true;
-                }else{
-                    return false;
-                }
-            });
+                    SCECTSToken = new web3.eth.Contract(ABI_ECTSToken, accountSCECTSToken);
+                    return SCECTSToken.methods.transferOwnership(accountSCPlataforma).send({
+                        gas: 3000000,
+						from: accountPlataforma
+					}).then( n => {
+                        return true;
+                    });
+                });
+        }).catch(err => {
+            console.log(err);
+            return false;
         });
 }

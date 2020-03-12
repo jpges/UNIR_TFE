@@ -5,8 +5,6 @@ const Student = artifacts.require("Student");
 const University = artifacts.require("University");
 
 module.exports = function(deployer) {
-  //UniversityPlatform
-  deployer.deploy(UniversityPlatform);
 
   //SubjectToken
   const nameSubjectToken = "Asignatura test";
@@ -15,18 +13,22 @@ module.exports = function(deployer) {
   const expirationtimeSubjectToken = 2500000000;
   const priceSubjectToken = 3;
   const descriptionURISubjectToken = "https://www.unir.net/";
-  deployer.deploy(SubjectToken, nameSubjectToken, symbolSubjectToken, limitmintSubjectToken, expirationtimeSubjectToken, priceSubjectToken, descriptionURISubjectToken);
+  deployer.deploy(SubjectToken, nameSubjectToken, symbolSubjectToken, limitmintSubjectToken,
+     expirationtimeSubjectToken, priceSubjectToken, descriptionURISubjectToken);
+
+  //Student
+  const studentname = "Jose";
+  deployer.deploy(Student, studentname);
 
   //ECTSToken
   deployer.deploy(ECTSToken).then(async () => {
+
+    //UniversityPlatform
+    await deployer.deploy(UniversityPlatform, ECTSToken.address);
    
     //University
     const universityname = "UNIR";
     await deployer.deploy(University, universityname, ECTSToken.address);
-
-    //University
-    const studentname = "Jose";
-    await deployer.deploy(Student, studentname, ECTSToken.address);
 
   });
 }

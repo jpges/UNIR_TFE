@@ -66,24 +66,13 @@ contract University is Ownable{
         return _subjects[account];
     }
     
-    /*
-    * @dev Se despliega un nuevo token SubjectToken que representa una asignatura
-    * Únicamente puede llamar la universidad propietaria del smart contract
-    * @param subjectname Nombre de la asignatura
-    * @param symbol Símbolo que representa la asignatura
-    * @param limitmint Número máximo de token que se pueden mintar de esta asignatura
-    * @param expirationtime Tiempo unix en el que no podrán mintarse más tokens de esta asignatura
-    * @param price Precio en ECTSToken por el que se vende la asignatura
-    * @param descriptionURI Una URL que apuntará al temario de la asignatura. Se transferirá a todos los tokens mintados.
-    * @return address La cuenta del nuevo token desplegado
-    */
-    function createSubject(string memory subjectname, string memory symbol, uint256 limitmint,
-        uint256 expirationtime, uint256 price, string memory descriptionURI) public onlyOwner returns (address) {
-        SubjectToken _subjectToken = new SubjectToken(subjectname, symbol, limitmint, expirationtime, price, descriptionURI);
-        _subjectsUniversity.push(address(_subjectToken));
-        _subjects[address(_subjectToken)] = true;
-        emit PublishNewSubject(subjectname,address(_subjectToken));
-        return (address(_subjectToken));
+
+    
+    function addSubject(string memory subjectname, address addressSCSubject) public onlyOwner returns (address) {
+        _subjectsUniversity.push(addressSCSubject);
+        _subjects[addressSCSubject] = true;
+        emit PublishNewSubject(subjectname,addressSCSubject);
+        return (addressSCSubject);
     }
     
     /*
@@ -149,4 +138,26 @@ contract University is Ownable{
         return true;
     }
     
+    /*
+    * @dev Matricula a un alumno en una asignatura
+    * Primero verifica que la asignatura en la que quiere matricularse existe
+    * Se emite un evento {EnrolledInSubject}
+    * @param accountSubject Cuenta de la asignatura en la que quiere matricularse
+    */
+    function enrollInSubject(address accountSubject) public returns (uint256){
+        require(isPublisedSubject(accountSubject), "University: accountSubject not found.");
+        SubjectToken sub = SubjectToken(accountSubject);
+        require(_universityStudentBalances[msg.sender].balance >= sub.price(), "University: Not enough tokens in deposit.");
+        require(sub.balanceOf(msg.sender)<1, "SubjectToken: this student is already enrolled");
+        //Le mintamos un nuevo token
+        uint256 tokenId = sub.mint(msg.sender);
+        
+        //Restamos los ECTS del precio de la asignatura del deposito del estudiante y ya que quedan liberados del depósito se los transferimos del smart contract de la universidad
+        //a la propia cuenta de la universidad para que pueda reembolsarlos contra la plataforma por ether
+        _universityStudentBalances[msg.sender].balance = (_universityStudentBalances[msg.sender].balance).sub(sub.price());
+        ECTSToken _token = ECTSToken(_addrtoken);
+        _token.transfer(owner(), sub.price());
+        emit EnrolledInSubject(msg.sender, accountSubject, tokenId);
+        return tokenId;
+    }
 }

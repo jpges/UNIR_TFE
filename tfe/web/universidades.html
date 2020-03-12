@@ -148,7 +148,9 @@
                             console.error("REEMBOLSAR: Se ha producido una excepción: " + err);
                         });
                 } else {
-                    alert("No dispones de tantos ECTS para reembolsar");
+                    if (cantidad>0) {
+                        alert("No dispones de tantos ECTS para reembolsar");
+                    }
                 }
             };
         });

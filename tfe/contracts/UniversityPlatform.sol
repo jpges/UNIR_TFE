@@ -45,10 +45,11 @@ contract UniversityPlatform is Ownable{
 
     /**
      * @dev Inicializa el contrato desplegando el token ECTSToken.
+     * @param addressSCECTSToken la dirección donde está el ECTSTOken desplegado
      * También establece el precio inicial que queremos poner a los ECTS, pero posteriormente se puede cambiar manualmente.
      */
-    constructor() public {
-        _token = new ECTSToken(); //Creamos el nuevo token que vamos a intercambiar
+    constructor(address addressSCECTSToken) public {
+        _token = ECTSToken(addressSCECTSToken); //Apuntamos al ECTSToken
         _priceOfOneTokenInWei=((76/100) * 10**18); //Inicialmente establezco el valor en 0,76 ETHER que son unos 150€. Este valor puede modificarse posteriormente.
         _priceOfOneTokenInWeiForRefund=((56/100) * 10**18); //Inicialmente establezco el valor en 0,56 ETHER que son unos 110€. Este valor puede modificarse posteriormente.
     }

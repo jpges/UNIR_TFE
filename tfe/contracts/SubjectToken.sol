@@ -5,45 +5,63 @@ import "../node_modules/@openzeppelin/contracts/ownership/Ownable.sol";
 import "./Limitable.sol";
 import "./Expirable.sol";
 
-contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
-    
+contract SubjectToken is ERC721Metadata, Ownable, Expirable, Limitable {
     event SubjectMinted(address _to);
-    event CreateNewSubject(address scAddress, string name, string symbol, string descriptionURI);
+    event CreateNewSubject(
+        address scAddress,
+        string name,
+        string symbol,
+        string descriptionURI
+    );
     event ActivityAdded(uint256 _id, string name);
-    
+
     struct Activity {
-      string name; //Nombre de la prueba, por ejemplo "Examen 16/04/20"
-      string mark; //Nota obtenida en la prueba, dejo texto porque habrá quien puntue con números y otros digan aprobado
+        string name; //Nombre de la prueba, por ejemplo "Examen 16/04/20"
+        string mark; //Nota obtenida en la prueba, dejo texto porque habrá quien puntue con números y otros digan aprobado
     }
 
     uint256 public lastTokenIndex;
-    
+
     // Precio del SubjectToken
     uint256 private _price;
-    
+
     // BaseURI: En versiones proximas ya está incluido en el ERC721. Sirve para tener una URI general de la asignatura
     string public baseURI;
-    
-    // Control de si una matrícula está aprobada o no
-    mapping (uint256 => bool) private _subjectApproved;
-    
-    // Mapeo de las pruebas realizadas en una asignatura
-    mapping (uint256 => Activity[]) private _activities;
 
-    constructor(string memory name, string memory symbol, uint256 limitmint, uint256 expirationtime, uint256 price, string memory descriptionURI)
-        public ERC721Metadata(name, symbol) Limitable(limitmint) Expirable(expirationtime) {
+    // Control de si una matrícula está aprobada o no
+    mapping(uint256 => bool) private _subjectApproved;
+
+    // Mapeo de las pruebas realizadas en una asignatura
+    mapping(uint256 => Activity[]) private _activities;
+
+    constructor(
+        string memory name,
+        string memory symbol,
+        uint256 limitmint,
+        uint256 expirationtime,
+        uint256 price,
+        string memory descriptionURI
+    )
+        public
+        ERC721Metadata(name, symbol)
+        Limitable(limitmint)
+        Expirable(expirationtime)
+    {
         require(bytes(name).length > 0, "SubjectToken: name is empty");
         require(bytes(symbol).length > 0, "SubjectToken: symbol is empty");
         require(limitmint > 0, "SubjectToken: limit of minted tokens is 0");
-        require(expirationtime > block.timestamp, "SubjectToken: expiration time is before today");
+        require(
+            expirationtime > block.timestamp,
+            "SubjectToken: expiration time is before today"
+        );
         require(price > 0, "SubjectToken: price is 0");
-        
+
         _price = price;
         baseURI = descriptionURI;
         lastTokenIndex = 0;
         emit CreateNewSubject(address(this), name, symbol, descriptionURI);
     }
-    
+
     /**
      * @dev Devuelve el precio del SubjectToken.
      * @return uint256 con el valor del precio
@@ -56,11 +74,20 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @dev Genera un nuevo token de la asignatura y pone de propietario al alumno que se ha matriculado. Únicamente permite
      * que el alumno se matricule una vez en la asignatura.
      */
-    function mint(address to) public onlyOwner belowLimit onTime returns(uint256) {
-        require(balanceOf(to)<1, "SubjectToken: this student is already enrolled");
+    function mint(address to)
+        public
+        onlyOwner
+        belowLimit
+        onTime
+        returns (uint256)
+    {
+        require(
+            balanceOf(to) < 1,
+            "SubjectToken: this student is already enrolled"
+        );
         increase();
         lastTokenIndex = lastTokenIndex + 1;
-        _mint(to,lastTokenIndex);
+        _mint(to, lastTokenIndex);
         emit SubjectMinted(to);
         return lastTokenIndex;
     }
@@ -68,10 +95,13 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     /**
      * @dev Nos permite asociar una URI a la asignatura, por ejemplo una URI que nos lleve al temario de la asignatura.
      */
-    function setTokenURI(uint256 tokenId, string memory _tokenURI) public onlyOwner {
-        _setTokenURI(tokenId,_tokenURI);
+    function setTokenURI(uint256 tokenId, string memory _tokenURI)
+        public
+        onlyOwner
+    {
+        _setTokenURI(tokenId, _tokenURI);
     }
-    
+
     /**
      * @dev Nos permite marcar una asignatura como aprobada una vez el alumno la ha superado
      * Únicamente puede llamar la universidad propietaria del smart contract
@@ -80,38 +110,46 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
     function setSubjectApproved(uint256 tokenId) public onlyOwner {
         _subjectApproved[tokenId] = true;
     }
-    
+
     /**
      * @dev Nos permite comprobar si una asignatura está aprobada
      */
     function isSubjectApproved(uint256 tokenId) public view returns (bool) {
         return _subjectApproved[tokenId];
     }
-    
+
     /**
      * @dev Nos permite crear una actividad asociada a la cadena, por ejemplo un examen, introduciendo su nombre,
      * las urls de los documentos asociados a la asignatura y la nota obtenida
      */
-    function addActivityDone(uint256 tokenId, string memory name, string memory mark) public onlyOwner {
+    function addActivityDone(
+        uint256 tokenId,
+        string memory name,
+        string memory mark
+    ) public onlyOwner {
         _activities[tokenId].push(Activity(name, mark));
         emit ActivityAdded(tokenId, name);
     }
-    
+
     /**
      * @dev Nos permite recuperar el número de actividades que se han informado de esta asignatura realizadas por el alumno.
      */
-    function getActivitiesCount(uint256 tokenId) public view returns (uint256){
+    function getActivitiesCount(uint256 tokenId) public view returns (uint256) {
         return _activities[tokenId].length;
     }
-    
+
     /**
      * @dev Nos permite recuperar de una actividad concreta el nombre y la calificación que obtuvo el alumno
      */
-    function getActivity(uint256 tokenId, uint256 index) public view returns (string memory, string memory){
+    function getActivity(uint256 tokenId, uint256 index)
+        public
+        view
+        returns (string memory, string memory)
+    {
         Activity memory _activity = _activities[tokenId][index];
         return (_activity.name, _activity.mark);
     }
-    
+
     /**
      * @dev Transfers the ownership of a given token ID to another address.
      * Usage of this method is discouraged, use {safeTransferFrom} whenever possible.
@@ -122,10 +160,13 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param tokenId uint256 ID of the token to be transferred
      */
     function transferFrom(address from, address to, uint256 tokenId) public {
-        require((from == owner()) || (to == owner()), "SubjectToken: student only can transfer to university");
+        require(
+            (from == owner()) || (to == owner()),
+            "SubjectToken: student only can transfer to university"
+        );
         super.transferFrom(from, to, tokenId);
     }
-    
+
     /**
      * @dev Safely transfers the ownership of a given token ID to another address
      * If the target address is a contract, it must implement {IERC721Receiver-onERC721Received},
@@ -138,11 +179,16 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param to address to receive the ownership of the given token ID
      * @param tokenId uint256 ID of the token to be transferred
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public {
-        require((from == owner()) || (to == owner()), "SubjectToken: student only can transfer to university");
+    function safeTransferFrom(address from, address to, uint256 tokenId)
+        public
+    {
+        require(
+            (from == owner()) || (to == owner()),
+            "SubjectToken: student only can transfer to university"
+        );
         super.safeTransferFrom(from, to, tokenId);
     }
-    
+
     /**
      * @dev Safely transfers the ownership of a given token ID to another address
      * If the target address is a contract, it must implement {IERC721Receiver-onERC721Received},
@@ -156,11 +202,19 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param tokenId uint256 ID of the token to be transferred
      * @param _data bytes data to send along with a safe transfer check
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public {
-        require((from == owner()) || (to == owner()), "SubjectToken: student only can transfer to university");
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) public {
+        require(
+            (from == owner()) || (to == owner()),
+            "SubjectToken: student only can transfer to university"
+        );
         super.safeTransferFrom(from, to, tokenId, _data);
     }
-    
+
     /**
      * @dev Sets or unsets the approval of a given operator
      * An operator is allowed to transfer all tokens of the sender on their behalf.
@@ -169,10 +223,13 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param approved representing the status of the approval to be set
      */
     function setApprovalForAll(address operator, bool approved) public {
-        require(operator == owner(), "SubjectToken: student only can approve to university");
+        require(
+            operator == owner(),
+            "SubjectToken: student only can approve to university"
+        );
         super.setApprovalForAll(operator, approved);
     }
-    
+
     /**
      * @dev Approves another address to transfer the given token ID
      * The zero address indicates there is no approved address.
@@ -183,7 +240,10 @@ contract SubjectToken is ERC721Metadata , Ownable, Expirable, Limitable {
      * @param tokenId uint256 ID of the token to be approved
      */
     function approve(address to, uint256 tokenId) public {
-        require(to == owner(), "SubjectToken: student only can approve to university");
+        require(
+            to == owner(),
+            "SubjectToken: student only can approve to university"
+        );
         super.approve(to, tokenId);
     }
 }

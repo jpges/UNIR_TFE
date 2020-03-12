@@ -11,7 +11,7 @@ contract Expirable {
     /**
      * @dev Inicializa el tiempo en el que ya no se podra usar la función.
      */
-    constructor (uint256 expirationtime) internal {
+    constructor(uint256 expirationtime) internal {
         _expirationtime = expirationtime;
     }
 

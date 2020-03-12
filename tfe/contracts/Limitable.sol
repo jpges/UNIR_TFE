@@ -15,7 +15,7 @@ contract Limitable {
     /**
      * @dev Inicializa el contra estableciendo la variable limit.
      */
-    constructor (uint256 limit) internal {
+    constructor(uint256 limit) internal {
         _minted = 0;
         _limit = limit;
     }
@@ -37,7 +37,7 @@ contract Limitable {
     /**
      * @dev Incrementa en 1 el numero de tokens mintados
      */
-    function increase() internal belowLimit{
+    function increase() internal belowLimit {
         _minted = _minted + 1;
     }
 

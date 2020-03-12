@@ -5,9 +5,7 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../node_modules/@openzeppelin/contracts/ownership/Ownable.sol";
 
 contract ECTSToken is ERC20Detailed, ERC20, Ownable {
-    
-    constructor() public ERC20Detailed("ECTSToken", "ECTS", 0) {
-    }
+    constructor() public ERC20Detailed("ECTSToken", "ECTS", 0) {}
 
     /** @dev Crea `amount` tokens y los asigna a la cuenta `beneficiary`, incrementando
      * el total suply.

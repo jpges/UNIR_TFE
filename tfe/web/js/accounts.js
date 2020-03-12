@@ -31,8 +31,7 @@ async function settingAccounts() {
         case TESTNET:
             web3 = new Web3(new Web3.providers.HttpProvider(TESTNET_PROVIDER));
             try {
-                var account = web3.eth.accounts.create(web3.utils.randomHex(32));
-                accounts = [account.address.toString()];
+                await web3.eth.getAccounts().then(c => {accounts = c;});
             }
             catch (error) {
                 die(error, "La TestNet no responde en http://localhost:22001, por favor, comprueba que se encuentra en ejecución.");
@@ -87,10 +86,10 @@ function die(error, errorMessage) {
 async function unlockPlatformAccount() {
     switch (environment) {
         case TESTNET:
-            web3.eth.personal.unlockAccount(accountPlataforma, "Passw0rd");
+            await web3.eth.personal.unlockAccount(accountPlataforma, "Passw0rd", 0);
             break;
         case ALASTRIA:
-            web3.eth.personal.unlockAccount(accountPlataforma, "Alumnos_2018_Q4_IKx5srvT");
+            await web3.eth.personal.unlockAccount(accountPlataforma, "Alumnos_2018_Q4_IKx5srvT", 0);
             break;
         default: //En este caso tirará de Ganache
         // En ganache todas las cuentas están desbloqueadas
