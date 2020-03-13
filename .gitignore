@@ -1,1 +1,2 @@
-tfe/build/*
+build/*
+node_modules/*
