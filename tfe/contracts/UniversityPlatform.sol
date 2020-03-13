@@ -17,7 +17,7 @@ contract UniversityPlatform is Ownable{
     event NewPrice(uint256 tokenpricewei);
     event NewPriceForRefund(uint256 tokenpriceweiforrefund);
     event UniversityRegistred(address account);
-    event StudentRegistred(address account);
+    event studentRegistred(address account);
     event RefuntECTS(address _from, address _to, uint256 _amount);
     
     // Smartcontracts relacionados
@@ -72,14 +72,14 @@ contract UniversityPlatform is Ownable{
     
     /**
      * @dev La función se utiliza para registrar nuevos estudiantes en la plataforma.
-     * Emite un evento {StudentRegistred} con el `account` del nuevo estudiante registrado.
+     * Emite un evento studentRegistred con el `account` del nuevo estudiante registrado.
      * @param accountStudent Cuenta del estudiante que se registra
      * @param accountSCStudent Cuenta del smart contract propiedad del estudiante y que la representa
      */
     function registerStudent(address accountStudent, address accountSCStudent) public onlyOwner{
         _students[accountStudent] = accountSCStudent;
         _listStudents.push(accountStudent);
-        emit StudentRegistred(accountStudent);
+        emit studentRegistred(accountStudent);
     }
     
     /**
