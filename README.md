@@ -91,3 +91,4 @@ A partir de este momento podrás acceder a la aplicación en [localhost:8000](ht
 ## Mis agradecimientos 🎁
 
 * Una cerveza 🍺 para todos los miembros del grupo Telegram EU_Blockchain_UNIR, sin los cuales, no sé si hubiese llegado a esto, pero para ello seguro que me lo habría pasado mucho peor 🤓🤓🤓. Gracias chicos, siempre atentos para ayudar.
+* Iñigo García de Mata, mi tutor en el proyecto. Aunque no hemos podido dedicar mucho tiempo juntos, siempre me ha propuesto ideas interesantes. Una cerveza 🍺 también para ti.
