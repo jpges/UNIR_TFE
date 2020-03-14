@@ -19,6 +19,7 @@ contract Student is Ownable {
 
     //Events
     event StudentDepositRegistred(address _from, address _to, uint256 _amount);
+    event StudentEnrollInSubject(address accountSCUniversity, address accountSCSubject, address accountStudent);
 
     //Estructura para guardar matriculas
     struct Enrollement {
@@ -179,6 +180,7 @@ contract Student is Ownable {
             _universityDepositBalance[accountSCUniversity].balance
         )
             .sub(subj.price());
+        emit StudentEnrollInSubject(accountSCUniversity, accountSCSubject, owner());
         return true;
     }
 

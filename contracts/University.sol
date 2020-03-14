@@ -106,7 +106,7 @@ contract University is Ownable{
     }
     
     /*
-    * @dev Recupera la información de una asignatura de la universidad
+    * @dev Recupera la información del deposito de una cuenta
     * @return (string, uint256) Información del deposito
     */
     function getDeposit(address account) public view returns(string memory, uint256) {

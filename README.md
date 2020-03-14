@@ -66,13 +66,14 @@ https://github.com/jpges/UNIR_TFE.git
 ```
 
 #### Instala el proyecto :hammer:
+Simplemente, en el directorio raiz del proyecto, donde está el package.json, ejecuta:
 ```
 npm install
 ```
 
 ## Inicio :rocket:
 
-Simplemente
+Igualmente, en el directorio raiz del proyecto, ejecuta:
 
 ```
 npm start
@@ -80,7 +81,27 @@ npm start
 
 A partir de este momento podrás acceder a la aplicación en [localhost:8000](http://localhost:8000)
 
-## Construido con 🛠️
+
+## Compilación, migración y prueba :construction:
+
+Estos scripts están basados en truffle. Si deseas utilizarlos es un requerimiento.
+
+Para la compilación lanza 
+```
+npm compile
+```  
+
+Para la migración lanza
+```
+npm migrate
+```  
+
+Y para lanzar el plan de pruebas definido, ejecuta
+```
+npm test
+```  
+
+## Desarrollado con 🛠️
 
 * [VS Vode](https://code.visualstudio.com/) - Editor de código gratuito construido sobre software libre.
 
