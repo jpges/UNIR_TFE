@@ -19,7 +19,7 @@ Funcionalmente también permite registrar el aprobado de una asignatura por part
 de un mecanismo de emisión de claims en un modelo de identidad digital basado en ERC725 y ERC735.
 
 _La memoria del proyecto se encuentra en_ 
-https://github.com/jpges/UNIR_TFE/blob/master/docs/TFE_Titulaciones_tokenizadas-Jose_Pastor-20200316.docx
+https://github.com/jpges/UNIR_TFE/blob/master/docs/TFE_Titulaciones_tokenizadas-Jose_Pastor-20200316.pdf
 
 
 ### Pre-requisitos 📋
