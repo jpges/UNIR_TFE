@@ -1,1 +1,130 @@
-<mxfile host="app.diagrams.net" modified="2020-03-15T18:40:17.901Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36" version="12.8.5" etag="p1GHvxvLnooPr3cb5jVP" type="github"><diagram id="h0SAN-XKMDXg5_xTU4uh">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2020-03-15T19:05:51.131Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36" etag="N6lSyO3JHznuHEYVMq4y" version="12.8.5" type="github">
+  <diagram id="h0SAN-XKMDXg5_xTU4uh" name="Page-1">
+    <mxGraphModel dx="1970" dy="1220" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-61" value="" style="group;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="50" y="60" width="740" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-1" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.rect;fillColor2=none;strokeWidth=1;size=20;indent=5;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry width="740" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-8" value="Web" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="10" y="10" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-36" value="alumnoasignatura.html" style="html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="289" y="30" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-37" value="comprarects.html" style="html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="520" y="30" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-38" value="config.html" style="html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="70" y="30" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="t7e4LqOeEacp8HW-eF_T-61" source="t7e4LqOeEacp8HW-eF_T-36" target="t7e4LqOeEacp8HW-eF_T-36">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-40" value="estudiantes.html" style="html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="520" y="70" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-41" value="favicon.ico" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="70" y="150" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-42" value="index.html" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="70" y="110" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-43" value="installplatform.html" style="html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="70" y="70" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-44" value="loading2.gif" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="70" y="190" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-45" value="loginestudiante.html" style="html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="520" y="110" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-46" value="loginuniversidad.html" style="html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="289" y="70" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-47" value="matricular.html" style="html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="520" y="150" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-48" value="registroasignatura.html" style="html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="289" y="110" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-49" value="registroestudiante.html" style="html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="520" y="190" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-50" value="registrouniversidad.html" style="html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="289" y="150" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-51" value="tfe.css" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="70" y="230" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-52" value="transferirects.html" style="html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="520" y="230" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-53" value="universidades.html" style="html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-61">
+          <mxGeometry x="289" y="190" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-62" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="50" y="380" width="740" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-54" value="" style="group" vertex="1" connectable="0" parent="t7e4LqOeEacp8HW-eF_T-62">
+          <mxGeometry width="740" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-55" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.rect;fillColor2=none;strokeWidth=1;size=20;indent=5;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-54">
+          <mxGeometry width="740" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-56" value="Lógica" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-54">
+          <mxGeometry x="10" y="10" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-57" value="install" style="html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-54">
+          <mxGeometry x="70" y="30" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-58" value="logic.js" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-54">
+          <mxGeometry x="289" y="30" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-59" value="contracts" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-54">
+          <mxGeometry x="289" y="70" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-60" value="accounts" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-54">
+          <mxGeometry x="289" y="110" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-63" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="50" y="580" width="740" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-15" value="" style="group" vertex="1" connectable="0" parent="t7e4LqOeEacp8HW-eF_T-63">
+          <mxGeometry width="740" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-3" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.rect;fillColor2=none;strokeWidth=1;size=20;indent=5;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry width="740" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-12" value="Blockchain" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry y="10" width="90" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-17" value="UniversityPlatform" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry x="65" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-18" value="ECTSToken" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry x="65" y="90" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-19" value="Expirable" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry x="295" y="140" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-20" value="Limitable" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry x="295" y="190" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-21" value="University" style="html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry x="295" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-22" value="SubjectToken" style="html=1;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry x="295" y="90" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="t7e4LqOeEacp8HW-eF_T-23" value="Student" style="html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="t7e4LqOeEacp8HW-eF_T-15">
+          <mxGeometry x="525" y="40" width="150" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
