@@ -49,7 +49,7 @@ module.exports = {
 	 gas: 0xffffff,
 	 gasPrice: 0x0,
 	 from: "0x74d4c56d8dcbc10a567341bfac6da0a8f04dc41d"
-  }
+  },
   
   alastria: {
    host: "10.141.8.11",
