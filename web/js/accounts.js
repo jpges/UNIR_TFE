@@ -40,16 +40,16 @@ async function settingAccounts() {
         case ALASTRIA:
             web3 = new Web3(new Web3.providers.HttpProvider(ALASTRIA_PROVIDER));
             accounts = [
-                "0x994319e1b1de09aac4aa5b225a7d5cade79d04ed",
-                "0x66c5a820d0e743fc7030f02aa873875c84a88f3f",
-                "0x34322a678b16ce26fc0e2bdde1e3c1b666a34a66",
-                "0xfc3b00c03b74ee1d94fa10e21aef4e6e9710e8a8",
-                "0xf76c62480a8a6a83451eeef40d331ed179da7f89",
-                "0x7b1b6d29cb425887d1bc4849d0708091bcbaf16b",
-                "0x12e3bb9f253bd233e03bd696b1c558a056179b87",
-                "0x59bedaa81edfd70b8e370a96cf29ee327e84e551",
-                "0x9a63729158a93f502935bc322af78e4f25a5cc02",
-                "0xab2c680816421e56ba3274a37c3df455fba32725"
+                "0xbc869c21d631e122d35789942a573241ec04d2e4",
+                "0xad11f232919a54696791387e3a74a63394c2dafb",
+                "0x35ad6e72cb2ec714b80154b796c7835f97053d3e",
+                "0xa3fefd78a13f6b6bb1cf60c20bb854c7ed2d8d17",
+                "0x09702705ebed2c925b3c56662e4982ebec8bce7d",
+                "0xc35fdb9f41a34e998f4d094922e190b4c6fd8e32",
+                "0x11c5395d602289b7407ceebb4fdde5707772c6ae",
+                "0x48d095879b4ebde16b74129c4ec9d3d78d984b80",
+                "0xea66394b0ecc0175b7b4889a24ea959e84b2d32c",
+                "0x241bae338d230276f8bc1d38e7ac7bc6a1cbdf22"
             ];
             break;
         case GANACHE: //En este caso tirará de Ganache
@@ -89,7 +89,7 @@ async function unlockPlatformAccount() {
             await web3.eth.personal.unlockAccount(accountPlataforma, "Passw0rd", 0);
             break;
         case ALASTRIA:
-            await web3.eth.personal.unlockAccount(accountPlataforma, "Alumnos_2018_Q4_IKx5srvT", 0);
+            await web3.eth.personal.unlockAccount(accountPlataforma, "4mFmfbLsSlUS9b5msSfx", 0);
             break;
         default: //En este caso tirará de Ganache
         // En ganache todas las cuentas están desbloqueadas
