@@ -89,7 +89,7 @@
             $('#loader').show();
             aprobarAsignatura(localStorage.getItem("accountUniversity"), localStorage.getItem("accountSCUniversity"), subject, tokenId)
                 .then(v => {
-                    var r = confirm("¿Estás seguro que quieres matricularte en esta asignatura?");
+                    var r = confirm("¿Estás seguro que quieres marcar la asignatura como aprobada?");
                     if (r == true) {
                         console.log(v);
                         alert("Se ha aprobado la asignatura");

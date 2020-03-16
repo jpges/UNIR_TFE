@@ -84,7 +84,7 @@ A partir de este momento podrás acceder a la aplicación en [localhost:8000](ht
 
 ## Compilación, migración y prueba :construction:
 
-Estos scripts están basados en truffle. Si deseas utilizarlos es un requerimiento.
+Estos scripts están basados en truffle. Si deseas utilizarlos, tenerlo instalado es un pre-requisito.
 
 Para la compilación lanza 
 ```
