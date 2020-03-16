@@ -50,7 +50,7 @@ Si la instalación es correcta, ejecutando los siguientes comandos podrás ver a
     $ npm --version
     6.13.4
 
-Si necesitas actualizar `npm`, puedes utilizar el propio `npm`, ejecutando el siguiente comando y preguntando de nuevo por la versión
+Es necesario que tengamos al menos las versiones indicadas. Si necesitas actualizar `npm`, puedes utilizar el propio `npm`, ejecutando el siguiente comando y preguntando de nuevo por la versión
 
     $ npm install npm -g
     
@@ -110,7 +110,7 @@ Para poder realizar este tipo de acciones es un pre-requisito tener instalado el
 #### Truffle (Required) ####
 Para instalarlo simplemente debes ejecutar
 ````
-npm install truffle -g
+sudo npm install -g truffle@5.0.18
 ````
 
 El sistema se ha provisto con 3 configuraciones de migración y prueba que pueden ser consultadas en el fichero truffle-config.js y que se han llamado "ganache", "testnet" y "alastria".
