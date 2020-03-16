@@ -24,12 +24,13 @@ https://github.com/jpges/UNIR_TFE/blob/master/docs/TFE_Titulaciones_tokenizadas-
 
 ### Pre-requisitos 📋
 
+#### Node.js y npm
+
 Será necesario tener Node.js instalado en el equipo.
 
 - #### Instalación de Node sobre Windows
 
   Ir a [official Node.js website](https://nodejs.org/) y descargar el instalador.
-Asegúrate también que `git` está disponible en tu PATH, `npm` podría necesitarlo (Puedes encontrar git [aquí](https://git-scm.com/)).
 
 - #### Instalación de Node sobre Ubuntu
 
@@ -52,15 +53,35 @@ Si la instalación es correcta, ejecutando los siguientes comandos podrás ver a
 Si necesitas actualizar `npm`, puedes utilizar el propio `npm`, ejecutando el siguiente comando y preguntando de nuevo por la versión
 
     $ npm install npm -g
+    
+   
+#### Git
+
+Para descargar e instalar el proyecto también será necesario tener instalado GIT.
+
+- #### Instalación de Git sobre Windows
+
+  Solo tienes que visitar http://git-scm.com/download/win y la descarga empezará automáticamente. Fíjate que éste es un proyecto conocido como Git para Windows (también llamado msysGit), el cual es diferente de Git. Para más información acerca de este proyecto visita http://msysgit.github.io/.
+  
+  Asegúrate también que `git` está disponible en tu PATH, `npm` podría necesitarlo.
+
+- #### Instalación de Git sobre Ubuntu
+
+  Puedes usar apt-get:
+  	````
+    $ apt-get install git
+    ````
+- #### Para otras opciones o sistemas operativos
+  Para opciones adicionales, la página web de Git tiene instrucciones de instalación en diferentes tipos de Unix. Puedes encontrar esta información en http://git-scm.com/download/linux.
+
+Si la instalación es correcta, ejecutando los siguientes comandos podrás ver algo similar a: 
+
+    $ git --version
+    git version 2.7.4
 
 ### Despliegue 🔧
 
-El despliegue del proyecto requiere tener instalado git.
-
-#### Required
-* Git::Repository
-
-Instala esta dependencia y clona el repositorio:
+Descarga o clona el repositorio desde:
 ```
 https://github.com/jpges/UNIR_TFE.git
 ```
@@ -84,7 +105,33 @@ A partir de este momento podrás acceder a la aplicación en [localhost:8000](ht
 
 ## Compilación, migración y prueba :construction:
 
-Estos scripts están basados en truffle. Si deseas utilizarlos, tenerlo instalado es un pre-requisito.
+Para poder realizar este tipo de acciones es un pre-requisito tener instalado el framework de desarrollo **truffle** (no es necesario para desplegar el proyecto y arrancarlo, pero sí para ejecutar los planes de prueba).
+
+#### Truffle (Required) ####
+Para instalarlo simplemente debes ejecutar
+````
+npm install truffle -g
+````
+
+El sistema se ha provisto con 3 configuraciones de migración y prueba que pueden ser consultadas en el fichero truffle-config.js y que se han llamado "ganache", "testnet" y "alastria".
+
+Para arrancar nuestra compilación, desde el directorio raiz del proyecto ejecutaremos:
+````
+truffle compile --all
+````
+Para ejecutar la migración de nuestros SC, dependiendo de la red utilizaremos:
+````
+truffle migrate --network [network]  --reset
+````
+Donde deberemos sustituir ````[network]```` por la correspondiente red sobre la que estemos migrando, "ganache", "testnet" o "alastria".
+
+Por último, para ejecutar el plan de pruebas sobre las diferentes redes, utilizaremos:
+````
+truffle test --network [network]
+````
+Igualmente sustituiremos ````[network]```` por la correspondiente red sobre la que pretendamos probar, "ganache", "testnet" o "alastria".
+
+Para un **entorno local de desarrollo como ganache**, se han incorporado 3 scripts al fichero package.json que nos facilitarán estas tareas (en algunos IDEs como el VSCode, los scripts package.json pueden ser lanzados visualmente desde el propio IDE).
 
 Para la compilación lanza 
 ```
