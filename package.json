@@ -8,7 +8,7 @@
   },
   "scripts": {
     "install": "./node_modules/.bin/copyfiles config.js web",
-    "start": "./node_modules/http-server/bin/http-server ./web -c-1 -p 8000 --cors",
+    "start": "node ./node_modules/http-server/bin/http-server ./web -c-1 -p 8000 --cors",
     "compile": "truffle compile --all",
     "migrate": "truffle migrate --network ganache  --reset",
     "test": "truffle test --network ganache"

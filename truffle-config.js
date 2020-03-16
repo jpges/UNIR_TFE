@@ -49,7 +49,16 @@ module.exports = {
 	 gas: 0xffffff,
 	 gasPrice: 0x0,
 	 from: "0x74d4c56d8dcbc10a567341bfac6da0a8f04dc41d"
-	}
+  }
+  
+  alastria: {
+   host: "10.141.8.11",
+   port: "8545",
+   network_id: "*",
+   gas: 0xffffff,
+   gasPrice: 0x0,
+   from: "0xbc869c21d631e122d35789942a573241ec04d2e4"
+  }
 
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.

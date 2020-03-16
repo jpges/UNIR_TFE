@@ -10,7 +10,7 @@ var priceECTSInMilliEtherForBuy = 760;
 var priceECTSInMilliEtherForSale = 560;
 
 const GANACHE_PROVIDER = "http://localhost:7545";
-const ALASTRIA_PROVIDER = "http://138.4.143.82:8545";
+const ALASTRIA_PROVIDER = "http://10.141.8.11:8545";
 const TESTNET_PROVIDER = "http://localhost:22001";
 const TESTNET = "testnet";
 const GANACHE = "ganache";
