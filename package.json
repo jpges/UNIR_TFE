@@ -16,7 +16,7 @@
   "author": "José Pastor",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "^4.7.2",
+    "@openzeppelin/contracts": "^4.7.3",
     "chai": "^4.2.0",
     "copyfiles": "^2.2.0",
     "http-server": "^0.12.1",
